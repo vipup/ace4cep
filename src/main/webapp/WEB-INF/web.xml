@@ -4,6 +4,21 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	version="3.0">
 	<display-name>Login Demo Using j_security_check</display-name>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>css</web-resource-name>
+			<url-pattern>/css/styles.css</url-pattern>
+		</web-resource-collection>
+		<!-- OMIT auth-constraint -->
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>svg</web-resource-name>
+			<url-pattern>/css/*</url-pattern>
+		</web-resource-collection>
+		<!-- OMIT auth-constraint -->
+	</security-constraint>	
+ 	
 	<!--Defines Security Constraint -->
 	<security-constraint>
 		<display-name>JSP Demo Constraint</display-name>
