@@ -1,3 +1,25 @@
+input[type="text"] {
+    width: 25vh;
+    display: block;
+    margin-bottom: 1vh;
+    background-color: yellow;
+    font-size: 5vh;
+}
+input[type="password"] {
+    width: 15vh;
+    display: block;
+    margin-bottom: 0vh;
+    background-color: yellow;
+    font-size: 5vh;
+}
+
+input[type="submit"] {
+    width: 15vh;
+    margin-left: 1vh;
+    display: block;
+    font-size: 4vh;
+}
+
 html {
     overflow-y: scroll;
     color: #003;
@@ -33,11 +55,11 @@ h1,
 h2 {
     margin: 0 0 0.5rem;
     color: #444;
-    font-weight: 400;
+    font-weight: 5vh;
     line-height: 1;
 }
-h1 { font-size: 2.4rem; }
-h2 { font-size: 3.6rem; }
+h1 { font-size: 3.45vh; }
+h2 { font-size: 2.345vh; }
 .error-code {
     color: #f47755;
     font-size: 8rem;
@@ -82,7 +104,7 @@ hr {
     -webkit-box-flex: 0;
     -ms-flex: 0 1 474px;
     flex: 0 1 474px;
-    background: #c8c44f url(server.svg) 50% 6em no-repeat;
+    background: #c8c44f url(key.svg) 50% 6em no-repeat;
     background-size: 44% auto;
 }
 .errpage {
@@ -97,7 +119,7 @@ hr {
     -webkit-box-flex: 0;
     -ms-flex: 0 1 474px;
     flex: 0 1 474px;
-    background: #c8444f url(server.svg) 50% 6em no-repeat;
+    background: #c8444f url(no-access.svg) 50% 6em no-repeat;
     background-size: 44% auto;
 }
 .main {
