@@ -1,5 +1,5 @@
 # minimal-war-example
-Build war with maven and with only one JSP :)
+Build war with maven and with some JSPs :)
 
 Steps:
 
