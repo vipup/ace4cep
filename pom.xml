@@ -3,9 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>hello-world</groupId>
-	<artifactId>tomcat-form-auth-sample</artifactId>
-	<version>1.0</version>
+	<version>0.1.0</version>
 	<packaging>war</packaging>
 	<properties>
 	 	<servlet-api-version>3.0.1</servlet-api-version>
@@ -29,7 +27,7 @@
 				<configuration>
 					<url>${tomcat.deploy.url}</url>
 					<server>${tomcat.principal}</server>
-					<path>/tomcat-role-based-auth</path>
+					<path>/ace4cep</path>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -65,4 +63,6 @@
 			</plugin>
 		</plugins>
 	</build>
+	<groupId>ace4cep</groupId>
+	<artifactId>web.console</artifactId>
 </project>
