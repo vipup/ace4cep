@@ -2,52 +2,12 @@
 <html lang="en">
 <head>
 <title>ACE in Action</title>
-<style type="text/css" media="screen">
-#embedded_ace_code {
-    border: 1px solid #DDD;
-    border-radius: 4px;
-    border-bottom-right-radius: 0px;
-    margin-top: 5px;
-}
-#editor {
-    position: relative;
-    overflow: hidden;
-    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-    direction: ltr;
-    text-align: left;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-#___editor {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-}
-
-.button {
-	background-color: #4CAF50;
-	border: none;
-	color: white;
-	padding: 20px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 16px;
-	margin: 4px 2px;
-}
-
-.button3 {
-	border-radius: 8px;
-}
-
-canvas {
-	border: 1px solid #d3d3d3;
-	background-color: #f1f1f1;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="css/ace.css" />
+<script type="text/javascript" src="js/wscommunicator.js"></script>
 </head>
 <body>
+	<div class="noscript">		<h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable Javascript and reload this page!</h2>	</div>
+	<input type="text" placeholder="hier is the hidden content of editor-area. Used as buffer for ws-chat-communication" id="chat" />	
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
@@ -67,10 +27,12 @@ select count(*) from MyEvent#time(3 min)
 		<div style="text-align: bottom; width: 480px;">
 			<button class="button button3" onmousedown="cep_exec()"
 				onmouseup="cep_donothing()" ontouchstart="cep_exec()">EXEC</button>
-			<br>
-			<br>
+ 
 			<button class="button button3" onmousedown="undo()"
 				onmouseup="cep_donothing()" ontouchstart="cep_undo()">STEPBACK</button>
+		</div>
+		<div id="console-container">
+			<div id="ViewConsole" />
 		</div>
 	</div>
 
