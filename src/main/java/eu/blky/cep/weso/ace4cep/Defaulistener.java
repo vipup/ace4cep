@@ -12,6 +12,8 @@ public class Defaulistener implements UpdateListener {
 
 	private Messenger sender;
 	private int updateCounter;
+	static private int uidcounter;
+	private int uid = uidcounter++;
 	/** Logger */
 	private static Logger LOG = LoggerFactory.getLogger(Defaulistener.class);
 
@@ -23,19 +25,27 @@ public class Defaulistener implements UpdateListener {
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
 		
 		updateCounter++;
+		String suffix ="";
+		String retval =""+uid+"#"+updateCounter+":[";
 		for (Object e:newEvents) { 
 			MapEventBean eBean = (MapEventBean)e;
-			double value = 0;
+			
 			//if (uuid==17)
 			for (String properyName : eBean.getProperties().keySet())
 			try {
 				LOG.trace("{}",  eBean );				
-				
-				sender.sendMessage("-##"+updateCounter+"##"+ properyName +" == '"+ value+"'");
-			 
+				Object value = eBean.get(properyName);
+				//sender.sendMessage("-#"+uid+"#"+updateCounter+"  #"+ properyName +" == '"+ value+"'");
+				retval+=suffix;
+				retval+="{";	
+				retval+=properyName +"=='"+ value+"'";
+				retval+="}";
+				suffix=",";
 			}catch(Exception ex) {
 				LOG.trace("{}", ex);
 			}
-		}		
+		}	
+		retval+="]";
+		sender.sendMessage(retval);
 	}
 }

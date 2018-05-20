@@ -13,17 +13,9 @@
 		<div style="text-align: left; width: 80px;">
 		</div>
 		<div id="editor" class="embedded_ace_code" style="height: 348px;">
-select rstream * from
-  StartEvent#time(30 sec) start
-    left outer join
-  AbortedEvent#time(30 sec) abort
-    on about.exchangeId = start.exchangeId
-    left outer join
-  FinishedEvent#time(30 sec) finished
-    on finished.exchangeId = start.exchangeId
-    
--- The next statement outputs the count of events within the last 3 minutes:
-select count(*) from MyEvent#time(3 min)
+
+insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3 c, 2-1 d,  3*111 e from pattern[every timer:interval(10 sec)]
+    			
     			</div>
 		<div style="text-align: bottom; width: 480px;">
 			<button class="button button3" onmousedown="cep_exec()"

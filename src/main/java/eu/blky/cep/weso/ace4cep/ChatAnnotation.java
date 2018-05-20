@@ -2,6 +2,7 @@ package eu.blky.cep.weso.ace4cep;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set; 
@@ -131,12 +132,20 @@ public class ChatAnnotation {
 		
     	if ("who".equals(message)) { // list of registered sessions
    		 	exec_who(message);
+    	}else if ("help".equals(message)) { // Show Statemens
+    		responce("available commands: help, who, stopall, startall, killall");
     	}else if ("ss".equals(message)) { // Show Statemens
     		exec_ss(message);
+    	}else if ("stopall".equals(message)) { // Show Statemens
+    		exec_stopall(message);
+    	}else if ("startall".equals(message)) { // Show Statemens
+    		exec_startall(message);
+    	}else if ("killall".equals(message)) { // Show Statemens
+    		exec_killall(message);
     	}else  try {			// toExec. assumes  - input is cep-command
     		String eqlTmp = message;
     		EPStatement priceSTMT = createEPStatement(eqlTmp); 
-    		Messenger proxyTmp = getMessanger();
+    		Messenger proxyTmp = getMessanger(priceSTMT.getName());
 			UpdateListener ulTmp = new Defaulistener(proxyTmp);
     		priceSTMT.addListener(ulTmp );    
     		responce(ulTmp.toString());
@@ -150,13 +159,13 @@ public class ChatAnnotation {
     	}		
     }
      
-	private Messenger getMessanger() {
+	private Messenger getMessanger(String statementName) {
 		return new Messenger() {
 
 			@Override
 			public void sendMessage(String string) {
 				try {
-					session.getBasicRemote().sendText(string);
+					session.getBasicRemote().sendText("."+statementName+"."+string);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -175,55 +184,43 @@ public class ChatAnnotation {
 		}
 		return retval;
 	}
-	String array2string(Object []oPar){
-		String retval = "";
-		for (Object o:oPar)retval+=o+" , ";
-		return retval;
-	}
-	private Object[] listAllListeners(String[] StatementNames) {
-		ArrayList<String>  listSet= new ArrayList<String>();
-		for(String name:StatementNames) {
+
+	private HashMap<String, CepPair>  listAllListeners(String[] StatementNames) {
+		HashMap<String, CepPair> retval = new HashMap<>(); 
+		for(String name:StatementNames) {			
 			EPStatement stmtTmp =  getKeeper().getCepAdm().getStatement(name);
-			// getUpdateListeners
-			Iterator<UpdateListener> listTmp = stmtTmp.getUpdateListeners() ;
-			while (listTmp.hasNext()   ) {
-				UpdateListener l = listTmp.next(); 
-				listSet.add(  name +" = { " + l +"} \n");
-			}
-			// getStatementAwareListeners
-			Iterator<StatementAwareUpdateListener> stnlistenersTmp = stmtTmp.getStatementAwareListeners();
-			while (stnlistenersTmp.hasNext()   ) {
-				StatementAwareUpdateListener l = stnlistenersTmp.next(); 
-				listSet.add(  name +" <=st= {{ " + l +"}} \n");
-			}
-			
+			CepPair nextTmp = new CepPair(name, stmtTmp);
+			retval.put(name, nextTmp);
 		}
-		Object[] listeners = listSet.toArray();
-		return listeners;
+		return retval;
 	} 
-	private void exec_ss(String message) {
+
+	//exec_rmall
+	private void exec_startall(String message) {
 		CepKeeper cepKeeper = getKeeper();
-		
-		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames();
-		//model.addObject("StatementNames", array2string(StatementNames) );
-		responce(array2string(StatementNames));
-		Object[] statements = listAllStatements(StatementNames);
-		//model.addObject("statements", array2string(statements ) );
-		responce(array2string(statements ));
-		Object[] listeners = listAllListeners(StatementNames);
-		//model.addObject("statementsListeners", array2string(listeners ) );
-		responce(array2string(listeners ));
-		
+		cepKeeper.getCepAdm().startAllStatements();
+		exec_ss(message);
 	}
-	private Object[] listAllStatements(String[] StatementNames) {
-		ArrayList<String> statementsList= new ArrayList();
-		for(String name:StatementNames) {
-			EPStatement stmtTmp = getKeeper().getCepAdm().getStatement(name);
-			statementsList.add( name +" =  '" + stmtTmp.getText() +"' \n");
-		}
-		Object[] statements = statementsList.toArray();
-		return statements;
+
+	private void exec_stopall(String message) {
+		CepKeeper cepKeeper = getKeeper();
+		cepKeeper.getCepAdm().stopAllStatements();
+		exec_ss(message);
 	}
+
+	private void exec_killall(String message) {
+		CepKeeper cepKeeper = getKeeper();
+		cepKeeper.getCepAdm().destroyAllStatements();
+		exec_ss(message);
+	}
+	
+	private void exec_ss(String message) {
+		CepKeeper cepKeeper = getKeeper(); 
+		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames(); 
+		HashMap<String, CepPair> listeners = listAllListeners(StatementNames);
+		responce(map2string(listeners )); 
+	}
+ 
 
 	private void responce(String filteredMessage) {
 		try {
