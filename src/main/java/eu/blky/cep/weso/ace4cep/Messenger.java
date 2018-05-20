@@ -4,4 +4,6 @@ public interface Messenger {
 
 	void sendMessage(String string);
 
+	void hide();
+
 }

@@ -48,4 +48,9 @@ public class Defaulistener implements UpdateListener {
 		retval+="]";
 		sender.sendMessage(retval);
 	}
+
+	public String toString() {		
+		String retval = "DL#"+uid;
+		return retval ;
+	}
 }

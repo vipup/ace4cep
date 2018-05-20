@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set; 
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -47,6 +48,8 @@ public class ChatAnnotation {
     private Session session;
 
 	private int engineCounter;
+
+	private List<Messenger> activeMessengers =  new ArrayList<Messenger>();
 
     public ChatAnnotation() {
         nickname = GUEST_PREFIX + connectionIds.getAndIncrement();
@@ -132,17 +135,21 @@ public class ChatAnnotation {
 		
     	if ("who".equals(message)) { // list of registered sessions
    		 	exec_who(message);
-    	}else if ("help".equals(message)) { // Show Statemens
-    		responce("available commands: help, who, stopall, startall, killall");
-    	}else if ("ss".equals(message)) { // Show Statemens
+    	}else if ("help".equals(message)) { 
+    		responce("available commands: help, who, stopall, startall, killall, hide{all}");
+    	}else if ("ss".equals(message)) { 
     		exec_ss(message);
-    	}else if ("stopall".equals(message)) { // Show Statemens
+    	}else if ("hideall".equals(message)) {  
+    		exec_hide(message);
+    	}else if ("hide".equals(message)) { 
+    		exec_hide(message);
+    	}else if ("stopall".equals(message)) {  
     		exec_stopall(message);
-    	}else if ("startall".equals(message)) { // Show Statemens
+    	}else if ("startall".equals(message)) {  
     		exec_startall(message);
-    	}else if ("killall".equals(message)) { // Show Statemens
+    	}else if ("killall".equals(message)) { 
     		exec_killall(message);
-    	}else  try {			// toExec. assumes  - input is cep-command
+    	}else  try { // toExec. assumes  - input is cep-command
     		String eqlTmp = message;
     		EPStatement priceSTMT = createEPStatement(eqlTmp); 
     		Messenger proxyTmp = getMessanger(priceSTMT.getName());
@@ -157,22 +164,30 @@ public class ChatAnnotation {
 	        responce("ERROR! "+e.getMessage());
 	        
     	}		
-    }
-     
+    } 
+	
 	private Messenger getMessanger(String statementName) {
-		return new Messenger() {
+		Messenger messenger = new Messenger() { 
+			private boolean enabled = true;
 
 			@Override
 			public void sendMessage(String string) {
+				if (enabled)
 				try {
 					session.getBasicRemote().sendText("."+statementName+"."+string);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				} 
+			}
+
+			@Override
+			public void hide() {
+				this.enabled  = false;
 				
 			}};
-		
+		activeMessengers.add(messenger);	
+		return messenger;		
 	}
 
 
@@ -195,6 +210,14 @@ public class ChatAnnotation {
 		return retval;
 	} 
 
+	//exec_hideactive
+	private void exec_hide(String message) {
+		for (Messenger m:this.activeMessengers) {
+			m.hide();			
+		}
+		activeMessengers.clear();
+		
+	}
 	//exec_rmall
 	private void exec_startall(String message) {
 		CepKeeper cepKeeper = getKeeper();
@@ -202,6 +225,7 @@ public class ChatAnnotation {
 		exec_ss(message);
 	}
 
+	
 	private void exec_stopall(String message) {
 		CepKeeper cepKeeper = getKeeper();
 		cepKeeper.getCepAdm().stopAllStatements();
