@@ -26,7 +26,7 @@ public class ChatAnnotation {
     private static final Set<ChatAnnotation> connections =
             new CopyOnWriteArraySet<ChatAnnotation>();
 
-    private final String nickname;
+    private String nickname;
     private Session session;
 
     public ChatAnnotation() {
@@ -37,7 +37,9 @@ public class ChatAnnotation {
     @OnOpen
     public void start(Session session) {
         this.session = session;
+        nickname = session.getUserPrincipal().getName()+"#"+session.getId();
         connections.add(this);
+        
         String message = String.format("* %s %s", nickname, "has joined.");
         broadcast(message);
     }
@@ -46,8 +48,7 @@ public class ChatAnnotation {
     @OnClose
     public void end() {
         connections.remove(this);
-        String message = String.format("* %s %s",
-                nickname, "has disconnected.");
+        String message = String.format("* %s %s", nickname, "has disconnected.");
         broadcast(message);
     }
     
@@ -55,13 +56,13 @@ public class ChatAnnotation {
     public void incoming(String message) {
     	//
     	if ("who".equals(message)) {
-    		String listOfUsers ="RRDDAIMON";
+    		String listOfCepStatements ="ANONYMOUS";
     		try {
     			for(ChatAnnotation con:connections) {
-    				listOfUsers += ",";
-    				listOfUsers += con.nickname;
+    				listOfCepStatements += ",";
+    				listOfCepStatements += con.nickname;
     			}
-    			session.getBasicRemote().sendText("connected: "+ listOfUsers);
+    			session.getBasicRemote().sendText("connected: "+ listOfCepStatements);
     		}catch(IOException e) {
     			// Ignore
     		}
@@ -69,8 +70,7 @@ public class ChatAnnotation {
     	 
     	else {
 	        // Never trust the client
-	        String filteredMessage = String.format("%s: %s",
-	                nickname, HTMLFilter_filter(message.toString()));
+	        String filteredMessage = String.format("%s: %s",   nickname, HTMLFilter_filter(message.toString()));
 	        broadcast(filteredMessage);
     	}
     }
