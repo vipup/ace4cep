@@ -3,11 +3,12 @@
 <head>
 <title>ACE in Action</title>
 <link rel="stylesheet" type="text/css" href="css/ace.css" />
+<script type="text/javascript" src="ace-builds/src-noconflict/ace.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/wscommunicator.js"></script>
 </head>
 <body>
 	<div class="noscript">		<h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable Javascript and reload this page!</h2>	</div>
-	<input type="text" placeholder="hier is the hidden content of editor-area. Used as buffer for ws-chat-communication" id="chat" />	
+	<input id="chat"  type="text" placeholder="hier is the hidden content of editor-area. Used as buffer for ws-chat-communication" />	
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
@@ -37,8 +38,7 @@ select count(*) from MyEvent#time(3 min)
 	</div>
 
 
-	<script src="ace-builds/src-noconflict/ace.js" type="text/javascript"
-		charset="utf-8"></script>
+
 	<script>
 		var editor = ace.edit("editor");
 		editor.setTheme("ace/theme/tomorrow_night_blue");

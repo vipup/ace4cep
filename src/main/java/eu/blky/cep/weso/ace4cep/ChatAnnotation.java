@@ -39,7 +39,6 @@ public class ChatAnnotation {
         this.session = session;
         nickname = session.getUserPrincipal().getName()+"#"+session.getId();
         connections.add(this);
-        
         String message = String.format("* %s %s", nickname, "has joined.");
         broadcast(message);
     }
@@ -128,8 +127,8 @@ public class ChatAnnotation {
                     client.session.close();
                 } catch (IOException e1) {
                     // Ignore
-                	System.exit(-1111);
                 	LOG.error("client.session.close();", e1);
+                	System.exit(-222);
                 }
                 String message = String.format("* %s %s",
                         client.nickname, "has been disconnected.");
