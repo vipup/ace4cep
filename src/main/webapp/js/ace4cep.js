@@ -3,9 +3,8 @@ function cep_undo(){
 	
 }
 function cep_exec(){
-	console.log("exec():: "+editor.getValue());
-	document.getElementById("chat").value = editor.getValue();
-	Chat.sendMessage();
+	console.log("exec():: "+editor.getValue());	
+	Chat.sendMultilineMessage(editor.getValue());
 }
 function cep_donothing(){
 	console.log("donothing()");

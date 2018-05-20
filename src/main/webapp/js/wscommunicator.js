@@ -46,7 +46,7 @@ Chat.initialize = function() {
 // On-Post-New-text-in chat
 Chat.sendMessage = (function() {
 	var message = document.getElementById('chat').value;
-	if (message != '' &&  'rrd' != message  ) {
+	if (message != '') {
 		ChatConsole.log("> : "+message);
 		Chat.socket.send(message);
 	}else{
@@ -55,6 +55,14 @@ Chat.sendMessage = (function() {
 	
 	document.getElementById('chat').value = '';
 
+});
+// sendMultilineMessage
+Chat.sendMultilineMessage = (function(messagePar) {
+	var message = messagePar;
+	if (message != '') {
+		//ChatConsole.log("> : "+message);
+		Chat.socket.send(message);
+	}
 });
 
 var ChatConsole = {};

@@ -150,12 +150,13 @@ public class ChatAnnotation {
     	}else if ("killall".equals(message)) { 
     		exec_killall(message);
     	}else  try { // toExec. assumes  - input is cep-command
-    		String eqlTmp = message;
-    		EPStatement priceSTMT = createEPStatement(eqlTmp); 
-    		Messenger proxyTmp = getMessanger(priceSTMT.getName());
-			UpdateListener ulTmp = new Defaulistener(proxyTmp);
-    		priceSTMT.addListener(ulTmp );    
-    		responce(ulTmp.toString());
+    		for (String eqlTmp : cleanUpMessages(message)) {
+    		    		EPStatement priceSTMT = createEPStatement(eqlTmp); 
+    		    		Messenger proxyTmp = getMessanger(priceSTMT.getName());
+    		    		UpdateListener ulTmp = new Defaulistener(proxyTmp);
+    		    		priceSTMT.addListener(ulTmp );    
+    		    		responce(ulTmp.toString());
+    		}
     	}catch (Exception e) {
 			// TODO: handle any  exception - just send the message back... 
     	    // && Never trust the client
@@ -166,6 +167,27 @@ public class ChatAnnotation {
     	}		
     } 
 	
+	private ArrayList<String> cleanUpMessages(String message) {
+		ArrayList<String> retval = new ArrayList<String>();
+		String nextEQL="";
+		for (String line:message.split("\n")) {
+			line = line.trim();
+			if (line.startsWith("--"))continue;
+			if (line.endsWith(";")) {
+				line = line.substring(0, line.length()-1); 
+				nextEQL += line + " ";
+				retval.add(nextEQL);
+				nextEQL="";
+			}else {
+				nextEQL += line + " ";
+			}
+			nextEQL += " ";
+		}
+		retval.add(nextEQL);
+		return retval;
+	}
+
+
 	private Messenger getMessanger(String statementName) {
 		Messenger messenger = new Messenger() { 
 			private boolean enabled = true;

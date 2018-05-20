@@ -8,13 +8,24 @@
 </head>
 <body>
 	<div class="noscript">		<h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable Javascript and reload this page!</h2>	</div>
-	<input id="chat"  type="text" placeholder="hier is the hidden content of editor-area. Used as buffer for ws-chat-communication" />	
+	<input id="chat"  type="text" placeholder="hier is the hidden content of editor-area. Used as buffer for ws-chat-communication" />
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
 		<div id="editor" class="embedded_ace_code" style="height: 348px;">
 
-insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3 c, 2-1 d,  3*111 e from pattern[every timer:interval(10 sec)]
+insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
+c, 2-1 d,  3*111 e from pattern[every timer:interval(1 sec)] ; 
+--- cooment 
+
+insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
+--- comment 22
+c, 2-1 d,  3*111 e from pattern[every timer:interval(2 sec)]  ;   
+--- comment 333
+--- comment 3333--- comment 2233333
+insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
+
+c, 2-1 d,  3*111 e from pattern[every timer:interval(3 sec)]  
     			
     			</div>
 		<div style="text-align: bottom; width: 480px;">
