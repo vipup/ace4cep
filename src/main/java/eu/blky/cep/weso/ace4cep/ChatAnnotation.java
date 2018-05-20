@@ -1,6 +1,8 @@
 package eu.blky.cep.weso.ace4cep;
 
-import java.io.IOException; 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set; 
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -22,6 +24,7 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
  
  
@@ -124,26 +127,105 @@ public class ChatAnnotation {
 
 	@OnMessage
     public void incoming(String message) {
-    	if ("who".equals(message)) {
-    		 exec_who(message);
+
+		
+    	if ("who".equals(message)) { // list of registered sessions
+   		 	exec_who(message);
+    	}else if ("ss".equals(message)) { // Show Statemens
+    		exec_ss(message);
     	}else  try {			// toExec. assumes  - input is cep-command
     		String eqlTmp = message;
     		EPStatement priceSTMT = createEPStatement(eqlTmp); 
-    		UpdateListener ulTmp = new Defaulistener();
+    		Messenger proxyTmp = getMessanger();
+			UpdateListener ulTmp = new Defaulistener(proxyTmp);
     		priceSTMT.addListener(ulTmp );    
-    		sendBack(ulTmp.toString());
+    		responce(ulTmp.toString());
     	}catch (Exception e) {
 			// TODO: handle any  exception - just send the message back... 
     	    // && Never trust the client
 	        String filteredMessage = String.format("%s: %s", nickname, HTMLFilter_filter(message.toString()));
-	        sendBack(filteredMessage);
-	        sendBack("ERROR! "+e.getMessage());
+	        responce(filteredMessage);
+	        responce("ERROR! "+e.getMessage());
 	        
     	}		
     }
      
- 
-	private void sendBack(String filteredMessage) {
+	private Messenger getMessanger() {
+		return new Messenger() {
+
+			@Override
+			public void sendMessage(String string) {
+				try {
+					session.getBasicRemote().sendText(string);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}};
+		
+	}
+
+
+	private String map2string(Map  vars) {
+		String retval = "";
+		Set<String> keys = vars.keySet();
+		for (String key:keys ) {
+			retval += key +" ==: [" + vars.get(key) +"]," ;
+		}
+		return retval;
+	}
+	String array2string(Object []oPar){
+		String retval = "";
+		for (Object o:oPar)retval+=o+" , ";
+		return retval;
+	}
+	private Object[] listAllListeners(String[] StatementNames) {
+		ArrayList<String>  listSet= new ArrayList<String>();
+		for(String name:StatementNames) {
+			EPStatement stmtTmp =  getKeeper().getCepAdm().getStatement(name);
+			// getUpdateListeners
+			Iterator<UpdateListener> listTmp = stmtTmp.getUpdateListeners() ;
+			while (listTmp.hasNext()   ) {
+				UpdateListener l = listTmp.next(); 
+				listSet.add(  name +" = { " + l +"} \n");
+			}
+			// getStatementAwareListeners
+			Iterator<StatementAwareUpdateListener> stnlistenersTmp = stmtTmp.getStatementAwareListeners();
+			while (stnlistenersTmp.hasNext()   ) {
+				StatementAwareUpdateListener l = stnlistenersTmp.next(); 
+				listSet.add(  name +" <=st= {{ " + l +"}} \n");
+			}
+			
+		}
+		Object[] listeners = listSet.toArray();
+		return listeners;
+	} 
+	private void exec_ss(String message) {
+		CepKeeper cepKeeper = getKeeper();
+		
+		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames();
+		//model.addObject("StatementNames", array2string(StatementNames) );
+		responce(array2string(StatementNames));
+		Object[] statements = listAllStatements(StatementNames);
+		//model.addObject("statements", array2string(statements ) );
+		responce(array2string(statements ));
+		Object[] listeners = listAllListeners(StatementNames);
+		//model.addObject("statementsListeners", array2string(listeners ) );
+		responce(array2string(listeners ));
+		
+	}
+	private Object[] listAllStatements(String[] StatementNames) {
+		ArrayList<String> statementsList= new ArrayList();
+		for(String name:StatementNames) {
+			EPStatement stmtTmp = getKeeper().getCepAdm().getStatement(name);
+			statementsList.add( name +" =  '" + stmtTmp.getText() +"' \n");
+		}
+		Object[] statements = statementsList.toArray();
+		return statements;
+	}
+
+	private void responce(String filteredMessage) {
 		try {
 			session.getBasicRemote().sendText(filteredMessage);
 		} catch (IOException e) {
