@@ -110,13 +110,13 @@ public class ChatAnnotation {
 		
 		// http://esper.espertech.com/release-7.1.0/esper-reference/html/extension.html#extension-virtualdw
 		// 17.3.2. Configuring the Single-Row Function Name
-		String functionName = "myFunction";
+ 
 		String className = MyClass.class.getName();
-		String methodName = "myFunction";
-		
-		configurationTmp.addPlugInSingleRowFunction(functionName, className, methodName);
-		 
-		
+		configurationTmp.addPlugInSingleRowFunction( "myFunction", className, "myFunction");
+		configurationTmp.addPlugInSingleRowFunction( "doCompute", className, "doCompute");
+		configurationTmp.addPlugInSingleRowFunction( "doCheck", className, "doCheck");
+		configurationTmp.addPlugInSingleRowFunction( "doSearch", className, "doSearch");
+		configurationTmp.addPlugInSingleRowFunction( "percent", className, "percent");
 		
 	    return keeper.getCepRT();
 	}    

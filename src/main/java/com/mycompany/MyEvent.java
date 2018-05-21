@@ -1,5 +1,6 @@
 package com.mycompany;
  
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -22,6 +23,10 @@ public class MyEvent {
 	private String ip_src;
 	private String customer;
 	private int uid;
+	private double fulfilled;
+	private double total;
+	private double amount;
+	
 	
 
 	private static final String[] types= {"A","b","C","d","e","f","g","h","e","j","k","l","m","n","o","p"};
@@ -38,6 +43,9 @@ public class MyEvent {
 		this.ip_src = ""+checkCount%255+"."+checkCount%127+"."+checkCount%65+"."+checkCount%31;
 		this.setCustomer("Cu"+type);
 		this.setUid(("U"+customer+type+eventtime+somefield).hashCode());
+		this.setFulfilled(new Random().nextDouble());
+		this.setTotal(new Random().nextDouble());
+		this.setAmount(new Random().nextDouble());
 	}
 
 	public static void startMonitoring(EPRuntime epRuntime) {
@@ -168,6 +176,48 @@ public class MyEvent {
 	 */
 	public void setUid(int uid) {
 		this.uid = uid;
+	}
+
+	/**
+	 * @return the fulfilled
+	 */
+	public double getFulfilled() {
+		return fulfilled;
+	}
+
+	/**
+	 * @param fulfilled the fulfilled to set
+	 */
+	public void setFulfilled(double fulfilled) {
+		this.fulfilled = fulfilled;
+	}
+
+	/**
+	 * @return the total
+	 */
+	public double getTotal() {
+		return total;
+	}
+
+	/**
+	 * @param total the total to set
+	 */
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	/**
+	 * @return the amount
+	 */
+	public double getAmount() {
+		return amount;
+	}
+
+	/**
+	 * @param amount the amount to set
+	 */
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
 
 }
