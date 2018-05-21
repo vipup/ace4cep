@@ -29,6 +29,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
+import com.espertech.esper.dataflow.util.DefaultSupportGraphEventUtil.MyEvent;
 import com.mycompany.Sensor;
  
  
@@ -99,7 +100,12 @@ public class ChatAnnotation {
         definition.put("temperature", double.class);
         epAdministrator.getConfiguration().addEventType(Sensor.SENSOR_EVENT, definition);
 		Sensor.getInstance().startMonitoring(epRuntime);	 	
-		 
+		
+		// Fake EvenrType def --------------- MyEvent.somefield
+		 epAdministrator.getConfiguration().addEventType("MyEvent", com.mycompany.MyEvent.class);
+		 com.mycompany.MyEvent.startMonitoring(epRuntime);
+		
+		
 	    return keeper.getCepRT();
 	}    
 
