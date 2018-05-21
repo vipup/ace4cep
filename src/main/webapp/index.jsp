@@ -12,10 +12,19 @@
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
-		<div id="editor" class="embedded_ace_code" style="height: 348px;">--- MyEvent sample
+		<div id="editor" class="embedded_ace_code" style="height: 348px;">--- string-OPs
+		select 
+		    count(*) c, uid / 3 u3, type, 
+		    ip_src.substring(0,ip_src.indexOf(".")) ipA,
+		    ip_src.substring(ip_src.lastIndexOf(".")+1) ipD
+		from MyEvent#time(3 sec) where size > 4;
+ 
+		
+		--- MyEvent sample
 		select count(*), type from MyEvent#time(3 sec) where size > 4;
 		-- myFunction sample
 		 select myFunction(value,e) from MyEvent;
+		 select type.replaceAll("A","aaaaaaaaaaaaaaaaa") from MyEvent;
 		 
 		---10.2.2.2. Last Aggregation Function 
 select first(*), last(*) from SensorEvent#time(10 sec)  
