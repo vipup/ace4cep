@@ -12,21 +12,29 @@
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
-		<div id="editor" class="embedded_ace_code" style="height: 348px;">
-
+		<div id="editor" class="embedded_ace_code" style="height: 348px;"> select * from SensorEvent where sensor = "s5";
+		
+		---
 insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
 c, 2-1 d,  3*111 e from pattern[every timer:interval(1 sec)] ; 
 --- cooment 
-
-insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
---- comment 22
-c, 2-1 d,  3*111 e from pattern[every timer:interval(2 sec)]  ;   
---- comment 333
---- comment 3333--- comment 2233333
+  
+/// --- comment 2233333
 insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
 
-c, 2-1 d,  3*111 e from pattern[every timer:interval(3 sec)]  
-    			
+c, 2-1 d,  3*111 e from pattern[every timer:interval(3 sec)];  
+--create variable boolean myvar0 = false;
+--create variable boolean myvar1 = true;
+--create variable boolean myvar2 = true;
+create variable boolean myvar0 = false;
+create variable boolean myvar1 = false;
+create variable boolean myvar2 = false;
+
+@Name("select-streamstar+outputvar")
+ select current_timestamp() , a.* 
+    from   pattern[every timer:interval(10 sec)] a 
+    output after 3 events when myvar0=false 
+    then set myvar1=false, myvar2=false 
     			</div>
 		<div style="text-align: bottom; width: 480px;">
 			<button class="button button3" onmousedown="cep_exec()"
@@ -38,9 +46,7 @@ c, 2-1 d,  3*111 e from pattern[every timer:interval(3 sec)]
 		<div id="console-container">
 			<div id="ViewConsole" />
 		</div>
-	</div>
-
-
+	</div> 
 
 	<script>
 		var editor = ace.edit("editor");

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set; 
@@ -28,6 +29,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
+import com.mycompany.Sensor;
  
  
   
@@ -79,34 +81,26 @@ public class ChatAnnotation {
     
 	private EPRuntime initCEP(){  
 		//getKeeper().getCepConfig().addEventType("OrderTick", OrderTick.class.getName()); 
+		// CFG-> SP -> RT 
+		//       +---> ADM
 		CepKeeper keeper = getKeeper();
 		Configuration cepConfig = keeper.getCepConfig();
-		EPServiceProvider provider = EPServiceProviderManager.getProvider("myCEPEngine#"+engineCounter++, cepConfig);
-		keeper.setCep(provider);
-		EPServiceProvider cep = keeper.getCep();
-		EPRuntime epRuntime = cep.getEPRuntime();
-		keeper.setCepRT(epRuntime); 
+		EPServiceProvider cep = EPServiceProviderManager.getProvider("myCEPEngine#"+engineCounter++, cepConfig);
+		/* SET */	keeper.setCep(cep);
+		EPRuntime epRuntime = cep.getEPRuntime(); 		
+		/* SET */	keeper.setCepRT(epRuntime); //cepConfig.get
 		EPAdministrator epAdministrator = cep.getEPAdministrator();
-		keeper.setCepAdm(epAdministrator);   
-	    
-//	    // step 4: summaryze that all
-//	    String eql4 = "insert into TicksPerSecond \n" + 
-//	    		"select  'PoloTick' type,  pair, count(*) as cnt \n" + 
-//	    		"from OrderTick.win:time_batch(11 second) \n" + 
-//	    		"group by pair";
-//	    EPStatement statStmtTmp = getKeeper().getCepAdm().createEPL(eql4); 
-//	    statStmtTmp.addListener(new Statistic2RddUpdater("TicksPerSecond")); 
-//	    
-//	    // step 5: summaryze that all
-//	    String eql5 = "" + 
-//	    		"select   type , sum(  cnt  )" + 
-//	    		"from TicksPerSecond.win:time_batch(1 second) " + 
-//	    		"group by type";
-//	    EPStatement statByTypeTmp = getKeeper().getCepAdm().createEPL(eql5); 
-//	    statByTypeTmp.addListener(new StatisticPrinter());	    
-	    
+		/* SET */	keeper.setCepAdm(epAdministrator);
+		
+		
+		// Fake EventType definition  --------------------- Sensor
+        Map<String, Object> definition = new LinkedHashMap<String, Object>();
+        definition.put("sensor", String.class);
+        definition.put("temperature", double.class);
+        epAdministrator.getConfiguration().addEventType(Sensor.SENSOR_EVENT, definition);
+		Sensor.getInstance().startMonitoring(epRuntime);	 	
+		 
 	    return keeper.getCepRT();
-	
 	}    
 
 	@OnClose
@@ -137,8 +131,10 @@ public class ChatAnnotation {
    		 	exec_who(message);
     	}else if ("help".equals(message)) { 
     		responce("available commands: help, who, stopall, startall, killall, hide{all}");
-    	}else if ("ss".equals(message)) { 
+    	}else if ("ss".equals(message)) { // show statements
     		exec_ss(message);
+    	}else if ("se".equals(message)) { // show eventtypes
+    		exec_se(message);
     	}else if ("hideall".equals(message)) {  
     		exec_hide(message);
     	}else if ("hide".equals(message)) { 
@@ -172,7 +168,9 @@ public class ChatAnnotation {
 		String nextEQL="";
 		for (String line:message.split("\n")) {
 			line = line.trim();
+			// ignore comments
 			if (line.startsWith("--"))continue;
+			if (line.startsWith("//"))continue;
 			if (line.endsWith(";")) {
 				line = line.substring(0, line.length()-1); 
 				nextEQL += line + " ";
@@ -183,7 +181,7 @@ public class ChatAnnotation {
 			}
 			nextEQL += " ";
 		}
-		retval.add(nextEQL);
+		if (!"".equals(nextEQL.trim()))retval.add(nextEQL);
 		return retval;
 	}
 
@@ -232,6 +230,17 @@ public class ChatAnnotation {
 		return retval;
 	} 
 
+	private HashMap<String, CepPair>  listEventSenders(String[] StatementNames) {
+		HashMap<String, CepPair> retval = new HashMap<>(); 
+		for(String name:StatementNames) {			
+			EPStatement stmtTmp =  getKeeper().getCepAdm().getStatement(name);
+			getKeeper().getCepRT().getEventSender("XX");
+			CepPair nextTmp = new CepPair(name, stmtTmp);
+			retval.put(name, nextTmp);
+		}
+		return retval;
+	} 
+
 	//exec_hideactive
 	private void exec_hide(String message) {
 		for (Messenger m:this.activeMessengers) {
@@ -265,6 +274,13 @@ public class ChatAnnotation {
 		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames(); 
 		HashMap<String, CepPair> listeners = listAllListeners(StatementNames);
 		responce(map2string(listeners )); 
+	}
+	
+	private void exec_se(String message) {
+		CepKeeper cepKeeper = getKeeper(); 
+		Configuration cfg = cepKeeper .getCepConfig();
+		Map<String, String> etn = cfg .getEventTypeNames();		
+		responce(map2string(etn)); 
 	}
  
 
