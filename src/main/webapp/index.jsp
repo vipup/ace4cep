@@ -12,8 +12,8 @@
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
-		<div id="editor" class="embedded_ace_code" style="height: 348px;"> select * from SensorEvent where sensor = "s5";
-		
+		<div id="editor" class="embedded_ace_code" style="height: 348px;"> ---10.2.2.2. Last Aggregation Function 
+select first(*), last(*) from SensorEvent#time(10 sec)  
 		---
 insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
 c, 2-1 d,  3*111 e from pattern[every timer:interval(1 sec)] ; 
