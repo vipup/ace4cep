@@ -20,6 +20,9 @@ public class MyEvent {
 	private long eventtime;
 	private short port;
 	private String ip_src;
+	private String customer;
+	private int uid;
+	
 
 	private static final String[] types= {"A","b","C","d","e","f","g","h","e","j","k","l","m","n","o","p"};
 	
@@ -33,6 +36,8 @@ public class MyEvent {
 		this.size = checkCount*checkCount %types.length;
 		this.port = (short) checkCount;
 		this.ip_src = ""+checkCount%255+"."+checkCount%127+"."+checkCount%65+"."+checkCount%31;
+		this.setCustomer("Cu"+type);
+		this.setUid(("U"+customer+type+eventtime+somefield).hashCode());
 	}
 
 	public static void startMonitoring(EPRuntime epRuntime) {
@@ -135,6 +140,34 @@ public class MyEvent {
 
 	public void setIp_src(String ip_src) {
 		this.ip_src = ip_src;
+	}
+
+	/**
+	 * @return the customer
+	 */
+	public String getCustomer() {
+		return customer;
+	}
+
+	/**
+	 * @param customer the customer to set
+	 */
+	public void setCustomer(String customer) {
+		this.customer = customer;
+	}
+
+	/**
+	 * @return the uid
+	 */
+	public int getUid() {
+		return uid;
+	}
+
+	/**
+	 * @param uid the uid to set
+	 */
+	public void setUid(int uid) {
+		this.uid = uid;
 	}
 
 }

@@ -22,6 +22,7 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
 import com.espertech.esper.client.Configuration;
+import com.espertech.esper.client.ConfigurationOperations;
 import com.espertech.esper.client.EPAdministrator;
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
@@ -30,6 +31,7 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.dataflow.util.DefaultSupportGraphEventUtil.MyEvent;
+import com.mycompany.MyClass;
 import com.mycompany.Sensor;
  
  
@@ -72,7 +74,7 @@ public class ChatAnnotation {
     private void initSession() {
     	Map<String, Object> props = this.session.getUserProperties();
 		CepKeeper newKeeper = new CepKeeper();
-		Configuration cepConfig = new com.espertech.esper.client.Configuration();
+		Configuration cepConfig = new Configuration(); // com.espertech.esper.client
 
 		props.put(CEP_KEEPER, newKeeper );
 		// <bean name="cepConfiguration" class="com.espertech.esper.client.Configuration" />
@@ -98,12 +100,22 @@ public class ChatAnnotation {
         Map<String, Object> definition = new LinkedHashMap<String, Object>();
         definition.put("sensor", String.class);
         definition.put("temperature", double.class);
-        epAdministrator.getConfiguration().addEventType(Sensor.SENSOR_EVENT, definition);
+        ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();
+		configurationTmp.addEventType(Sensor.SENSOR_EVENT, definition);
 		Sensor.getInstance().startMonitoring(epRuntime);	 	
 		
 		// Fake EvenrType def --------------- MyEvent.somefield
-		 epAdministrator.getConfiguration().addEventType("MyEvent", com.mycompany.MyEvent.class);
-		 com.mycompany.MyEvent.startMonitoring(epRuntime);
+		configurationTmp.addEventType("MyEvent", com.mycompany.MyEvent.class);
+		com.mycompany.MyEvent.startMonitoring(epRuntime);
+		
+		// http://esper.espertech.com/release-7.1.0/esper-reference/html/extension.html#extension-virtualdw
+		// 17.3.2. Configuring the Single-Row Function Name
+		String functionName = "myFunction";
+		String className = MyClass.class.getName();
+		String methodName = "myFunction";
+		
+		configurationTmp.addPlugInSingleRowFunction(functionName, className, methodName);
+		 
 		
 		
 	    return keeper.getCepRT();

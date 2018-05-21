@@ -14,6 +14,8 @@
 		</div>
 		<div id="editor" class="embedded_ace_code" style="height: 348px;">--- MyEvent sample
 		select count(*), type from MyEvent#time(3 sec) where size > 4;
+		-- myFunction sample
+		 select myFunction(value,e) from MyEvent;
 		 
 		---10.2.2.2. Last Aggregation Function 
 select first(*), last(*) from SensorEvent#time(10 sec)  
