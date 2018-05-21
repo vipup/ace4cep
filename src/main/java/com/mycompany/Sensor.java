@@ -10,8 +10,22 @@ import java.util.concurrent.TimeUnit;
 import com.espertech.esper.client.EPRuntime;
 
 public class Sensor {
+	ThreadFactory highPrioFactory = new ThreadFactory() {
+		@Override
+		public Thread newThread(Runnable r) {				
+			Runnable arg1 = r;
+			String arg2 = "highPrioFactory";
+			Thread retval = new Thread(t1, arg1, arg2);
+			retval.setDaemon(false);
+			retval.setPriority(Thread.MAX_PRIORITY-1);
+			return retval ;
+		}
+	};
+	ScheduledExecutorService neverendingThread = Executors.newSingleThreadScheduledExecutor(highPrioFactory );
+	
+	
 	public  static final String SENSOR_EVENT = "SensorEvent";
-	static final ThreadGroup t1 = new ThreadGroup("always running SensorThread" );
+	final ThreadGroup t1 = new ThreadGroup("always running SensorThread" );
 
 	public static Sensor getInstance() {
 		return new Sensor();		
@@ -24,19 +38,7 @@ public class Sensor {
 	public void startMonitoring(EPRuntime epRuntime) {
 		this.rt = epRuntime;
 		
-		ThreadFactory highPrioFactory = new ThreadFactory() {
-			@Override
-			public Thread newThread(Runnable r) {				
-				Runnable arg1 = r;
-				String arg2 = "highPrioFactory";
-				Thread retval = new Thread(t1, arg1, arg2);
-				retval.setDaemon(false);
-				retval.setPriority(Thread.MAX_PRIORITY-1);
-				return retval ;
-			}
-		};
-		ScheduledExecutorService neverendingThread = Executors.newSingleThreadScheduledExecutor(highPrioFactory );
-		
+
 	    Runnable commandTmp = new Runnable() { 
 	    	int checkCount =0;
 	        @Override
@@ -60,5 +62,10 @@ public class Sensor {
 		long period = 1;
 		TimeUnit unit = TimeUnit.SECONDS;
 		neverendingThread.scheduleAtFixedRate(commandTmp, initialDelay, period, unit);	
+	}
+
+	public void stop() {
+		neverendingThread.shutdown();
+		
 	} 
 }

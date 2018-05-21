@@ -3,6 +3,7 @@ package com.mycompany;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import com.espertech.esper.client.EPRuntime;
@@ -10,7 +11,7 @@ import com.espertech.esper.client.EPRuntime;
 public class MyEvent {
 	static final ThreadGroup t1 = new ThreadGroup("always running MyEventThread" );
 
-	static private EPRuntime rt;
+	private EPRuntime rt;
 
 	private int somefield;
 
@@ -48,10 +49,7 @@ public class MyEvent {
 		this.setAmount(new Random().nextDouble());
 	}
 
-	public static void startMonitoring(EPRuntime epRuntime) {
-		rt = epRuntime;
-		
-		ThreadFactory highPrioFactory = new ThreadFactory() {
+	ThreadFactory highPrioFactory = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {				
 				Runnable arg1 = r;
@@ -62,7 +60,12 @@ public class MyEvent {
 				return retval ;
 			}
 		};
-		ScheduledExecutorService neverendingThread = Executors.newSingleThreadScheduledExecutor(highPrioFactory );
+	ScheduledExecutorService neverendingThread = Executors.newSingleThreadScheduledExecutor(highPrioFactory );
+		
+	 
+	
+	public void startMonitoring(EPRuntime epRuntime) {
+		rt = epRuntime; 
 		
 	    Runnable commandTmp = new Runnable() { 
 	    	int checkCount =0;
@@ -83,8 +86,14 @@ public class MyEvent {
 		long initialDelay = 1;
 		long period = 1;
 		TimeUnit unit = TimeUnit.SECONDS;
-		neverendingThread.scheduleAtFixedRate(commandTmp, initialDelay, period, unit);	
+		shutdownHook = neverendingThread.scheduleAtFixedRate(commandTmp, initialDelay, period, unit);
+		
+		
 	}
+	ScheduledFuture<?> shutdownHook ;
+	public void stopMonitoring( ) {
+		shutdownHook.cancel(true);
+	}	
 
 	public int getSomefield() {
 		return somefield;

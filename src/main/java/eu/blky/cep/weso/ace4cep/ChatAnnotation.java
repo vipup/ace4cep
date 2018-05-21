@@ -71,6 +71,14 @@ public class ChatAnnotation {
         broadcast(message);
     }
 
+    private void destroySession() {
+    	hookToKill.stopMonitoring();
+    	mySensor.stop();
+    	
+    	Map<String, Object> props = this.session.getUserProperties();
+    	getKeeper().destroy();
+    	props.remove(CEP_KEEPER);
+    }
     private void initSession() {
     	Map<String, Object> props = this.session.getUserProperties();
 		CepKeeper newKeeper = new CepKeeper();
@@ -102,11 +110,13 @@ public class ChatAnnotation {
         definition.put("temperature", double.class);
         ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();
 		configurationTmp.addEventType(Sensor.SENSOR_EVENT, definition);
-		Sensor.getInstance().startMonitoring(epRuntime);	 	
+		mySensor = Sensor.getInstance();
+		mySensor.startMonitoring(epRuntime);	 	
 		
 		// Fake EvenrType def --------------- MyEvent.somefield
 		configurationTmp.addEventType("MyEvent", com.mycompany.MyEvent.class);
-		com.mycompany.MyEvent.startMonitoring(epRuntime);
+		hookToKill = new com.mycompany.MyEvent(111111);
+		hookToKill.startMonitoring(epRuntime);
 		
 		// http://esper.espertech.com/release-7.1.0/esper-reference/html/extension.html#extension-virtualdw
 		// 17.3.2. Configuring the Single-Row Function Name
@@ -120,12 +130,15 @@ public class ChatAnnotation {
 		
 	    return keeper.getCepRT();
 	}    
+	com.mycompany.MyEvent hookToKill ;
+	Sensor mySensor ;
 
 	@OnClose
     public void end() {
         connections.remove(this);
         String message = String.format("* %s %s", nickname, "has disconnected.");
         broadcast(message);
+        destroySession();
     }
  
 	private EPStatement createEPStatement(String eql3) {
@@ -137,14 +150,12 @@ public class ChatAnnotation {
 	
 	
     private CepKeeper getKeeper() { 
-		return (CepKeeper) session.getUserProperties().get(CEP_KEEPER  );
+		return (CepKeeper) session.getUserProperties().get(CEP_KEEPER);
 	}
 
 
 	@OnMessage
-    public void incoming(String message) {
-
-		
+    public void incoming(String message) {		
     	if ("who".equals(message)) { // list of registered sessions
    		 	exec_who(message);
     	}else if ("help".equals(message)) { 
@@ -177,7 +188,6 @@ public class ChatAnnotation {
 	        String filteredMessage = String.format("%s: %s", nickname, HTMLFilter_filter(message.toString()));
 	        responce(filteredMessage);
 	        responce("ERROR! "+e.getMessage());
-	        
     	}		
     } 
 	
@@ -221,8 +231,7 @@ public class ChatAnnotation {
 
 			@Override
 			public void hide() {
-				this.enabled  = false;
-				
+				this.enabled  = false;				
 			}};
 		activeMessengers.add(messenger);	
 		return messenger;		

@@ -52,5 +52,10 @@ public class CepKeeper {
 
 	public void setCepRT(EPRuntime cepRT) {
 		this.cepRT = cepRT;
+	}
+
+	public void destroy() {
+		getCepAdm().destroyAllStatements();
+		getCep().destroy();		
 	}	
 }
