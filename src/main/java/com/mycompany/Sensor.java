@@ -65,7 +65,6 @@ public class Sensor {
 	}
 
 	public void stop() {
-		neverendingThread.shutdown();
-		
+		neverendingThread.shutdown();		
 	} 
 }
