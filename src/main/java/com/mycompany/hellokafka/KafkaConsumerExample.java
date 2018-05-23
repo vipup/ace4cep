@@ -12,7 +12,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
  * Kafka hello world consumer
  */
 public class KafkaConsumerExample {
-    private final static String TOPIC_NAME = "topic_name";
+    public final static String TOPIC_NAME = "topic_name";
 
     public static void main(String[] args) {
         // consume messages
@@ -37,7 +37,7 @@ public class KafkaConsumerExample {
         }
     }
 
-    private static Consumer<String, String> createConsumer() {
+    public static Consumer<String, String> createConsumer() {
         Properties kafkaProps = new Properties();
         kafkaProps.put("bootstrap.servers", "localhost:9092");
         kafkaProps.put("group.id", "test_consumer_group");

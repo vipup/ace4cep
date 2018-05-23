@@ -10,6 +10,21 @@
 	</properties>
 
 	<dependencies>
+<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-clients</artifactId>
+    <version>0.10.2.1</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/com.espertech/esperio-kafka -->
+<dependency>
+    <groupId>com.espertech</groupId>
+    <artifactId>esperio-kafka</artifactId>
+    <version>7.1.0</version>
+</dependency>
+	
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>

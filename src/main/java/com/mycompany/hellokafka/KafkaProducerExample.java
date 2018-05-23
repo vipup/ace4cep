@@ -12,7 +12,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
  * Kafka hello world message producer
  */
 public class KafkaProducerExample {
-    private final static String TOPIC_NAME = "topic_name";
+	 private final static String TOPIC_NAME = "topic_name";
 
     public static void main(String[] args) {
         // produce a test message
@@ -48,7 +48,7 @@ public class KafkaProducerExample {
         }
     }
 
-    private static Producer<String, String> createProducer() {
+    static Producer<String, String> createProducer() {
         Properties kafkaProps = new Properties();
         kafkaProps.put("bootstrap.servers", "localhost:9092");
         kafkaProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");

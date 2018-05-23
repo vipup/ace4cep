@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set; 
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,6 +21,8 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.ConfigurationOperations;
@@ -31,7 +34,16 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.dataflow.util.DefaultSupportGraphEventUtil.MyEvent;
+import com.espertech.esperio.kafka.EsperIOKafkaConfig;
+import com.espertech.esperio.kafka.EsperIOKafkaInputAdapterPlugin;
+import com.espertech.esperio.kafka.EsperIOKafkaInputProcessorDefault;
+import com.espertech.esperio.kafka.EsperIOKafkaInputSubscriberByTopicList;
+import com.espertech.esperio.kafka.EsperIOKafkaInputTimestampExtractorConsumerRecord;
+import com.espertech.esperio.kafka.EsperIOKafkaOutputAdapterPlugin;
+import com.espertech.esperio.kafka.EsperIOKafkaOutputFlowControllerByAnnotatedStmt;
+import com.espertech.esperio.kafka.KafkaOutputDefault;
 import com.mycompany.MyClass;
+import com.mycompany.MyKafkaEvent;
 import com.mycompany.Sensor;
  
  
@@ -73,6 +85,7 @@ public class ChatAnnotation {
 
     private void destroySession() {
     	hookToKill.stopMonitoring();
+    	kafkaHook.stopMonitoring();
     	mySensor.stop();
     	
     	Map<String, Object> props = this.session.getUserProperties();
@@ -89,7 +102,7 @@ public class ChatAnnotation {
 		newKeeper .setCepConfig(cepConfig );
 		initCEP();
 	}
-    
+	MyKafkaEvent kafkaHook = new  MyKafkaEvent(null);
 	private EPRuntime initCEP(){  
 		//getKeeper().getCepConfig().addEventType("OrderTick", OrderTick.class.getName()); 
 		// CFG-> SP -> RT 
@@ -103,32 +116,103 @@ public class ChatAnnotation {
 		EPAdministrator epAdministrator = cep.getEPAdministrator();
 		/* SET */	keeper.setCepAdm(epAdministrator);
 		
-		
-		// Fake EventType definition  --------------------- Sensor
-        Map<String, Object> definition = new LinkedHashMap<String, Object>();
-        definition.put("sensor", String.class);
-        definition.put("temperature", double.class);
+
         ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();
-		configurationTmp.addEventType(Sensor.SENSOR_EVENT, definition);
-		mySensor = Sensor.getInstance();
-		mySensor.startMonitoring(epRuntime);	 	
+		// Fake EventType definition  --------------------- Sensor
+        setupMySensor(epRuntime, configurationTmp );	 	
 		
 		// Fake EvenrType def --------------- MyEvent.somefield
-		configurationTmp.addEventType("MyEvent", com.mycompany.MyEvent.class);
-		hookToKill = new com.mycompany.MyEvent(111111);
-		hookToKill.startMonitoring(epRuntime);
+		setupMyEvent(epRuntime, configurationTmp);
 		
 		// http://esper.espertech.com/release-7.1.0/esper-reference/html/extension.html#extension-virtualdw
 		// 17.3.2. Configuring the Single-Row Function Name
- 
+		setupMyClass(configurationTmp);
+
+		//setupKafkaInput(cepConfig);
+		//setupKafkaOutput(cepConfig);
+		
+		setupMyKafkaEvent(epRuntime, configurationTmp);
+		
+	    return keeper.getCepRT();
+	}
+
+
+	private void setupMyKafkaEvent(EPRuntime epRuntime, ConfigurationOperations configurationTmp) {
+		configurationTmp.addEventType("MyKafkaEvent", com.mycompany.MyKafkaEvent.class);
+		kafkaHook.startMonitoring(epRuntime);
+
+	}
+
+	private void setupKafkaInput(Configuration config) {
+		{ // http://esper.espertech.com/release-7.1.0/esperio-reference/html/adapter_kafka.html
+			Properties props = new Properties();
+
+			// Kafka Consumer Properties
+			props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+			props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class.getName());
+			props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, com.mycompany.MyCustomDeserializer.class.getName());
+			props.put(ConsumerConfig.GROUP_ID_CONFIG, "my_group_id");
+
+			// EsperIO Kafka Input Adapter Properties
+			props.put(EsperIOKafkaConfig.INPUT_SUBSCRIBER_CONFIG, EsperIOKafkaInputSubscriberByTopicList.class.getName());
+			props.put(EsperIOKafkaConfig.TOPICS_CONFIG, "my_topic");
+			props.put(EsperIOKafkaConfig.INPUT_PROCESSOR_CONFIG, EsperIOKafkaInputProcessorDefault.class.getName());
+			props.put(EsperIOKafkaConfig.INPUT_TIMESTAMPEXTRACTOR_CONFIG, EsperIOKafkaInputTimestampExtractorConsumerRecord.class.getName());
+
+			 
+			config.addPluginLoader("KafkaInput", EsperIOKafkaInputAdapterPlugin.class.getName(), props, null);
+			
+		}
+	}
+
+
+	private void setupKafkaOutput(Configuration config) {
+		config.addImport(KafkaOutputDefault.class);
+		{ // http://esper.espertech.com/release-6.0.1/esperio-reference/html/adapter_kafka.html
+			Properties props = new Properties();
+
+			// Kafka Producer Properties
+			props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+			props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class.getName());
+			props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class.getName());
+
+			// EsperIO Kafka Output Adapter Properties
+			props.put(EsperIOKafkaConfig.OUTPUT_FLOWCONTROLLER_CONFIG, EsperIOKafkaOutputFlowControllerByAnnotatedStmt.class.getName());
+			props.put(EsperIOKafkaConfig.TOPICS_CONFIG, "my_topic");
+
+			 
+			config.addPluginLoader("KafkaOutput", EsperIOKafkaOutputAdapterPlugin.class.getName(), props, null);
+			
+		}
+	}
+
+
+	private ConfigurationOperations setupMySensor(EPRuntime epRuntime, ConfigurationOperations configurationTmp ) {
+		Map<String, Object> definition = new LinkedHashMap<String, Object>();
+        definition.put("sensor", String.class);
+        definition.put("temperature", double.class);
+        
+		configurationTmp.addEventType(Sensor.SENSOR_EVENT, definition);
+		mySensor = Sensor.getInstance();
+		mySensor.startMonitoring(epRuntime);
+		return configurationTmp;
+	}
+
+
+	private void setupMyClass(ConfigurationOperations configurationTmp) {
 		String className = MyClass.class.getName();
 		configurationTmp.addPlugInSingleRowFunction( "myFunction", className, "myFunction");
 		configurationTmp.addPlugInSingleRowFunction( "doCompute", className, "doCompute");
 		configurationTmp.addPlugInSingleRowFunction( "doCheck", className, "doCheck");
 		configurationTmp.addPlugInSingleRowFunction( "doSearch", className, "doSearch");
 		configurationTmp.addPlugInSingleRowFunction( "percent", className, "percent");
-		
-	    return keeper.getCepRT();
+	}
+
+
+	private void setupMyEvent(EPRuntime epRuntime, ConfigurationOperations configurationTmp) {
+		configurationTmp.addEventType("MyEvent", com.mycompany.MyEvent.class);
+		hookToKill = new com.mycompany.MyEvent(111111);
+		hookToKill.startMonitoring(epRuntime);
 	}    
 	com.mycompany.MyEvent hookToKill ;
 	Sensor mySensor ;
