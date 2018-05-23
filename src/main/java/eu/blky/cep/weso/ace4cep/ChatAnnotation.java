@@ -197,7 +197,7 @@ public class ChatAnnotation {
     	}else if ((""+message).startsWith("i:" )) { // show DataFlows
     		String dataFlowName = message.substring("i:".length() );
 			EPDataFlowInstance retval = this.getKeeper().getCepRT().getDataFlowRuntime().instantiate(dataFlowName );
-			
+			// TODO :((( 100% CPU @  --MyDataFlow-20.3.7. Select ----------------------  retval.start();
     		responce(  "EPDataFlowInstance =:"+retval 
     				+ " ::: "+ map2string( retval.getParameters() )); 
     	}else if ((""+message).startsWith("r:" )) { // TODO
@@ -292,10 +292,13 @@ public class ChatAnnotation {
 
 	private String map2string(Map  vars) {
 		String retval = "";
-		Set<String> keys = vars.keySet();
-		for (String key:keys ) {
-			retval += key +" ==: [" + vars.get(key) +"]," ;
-		}
+		try {
+			Set<String> keys = vars.keySet();
+			
+			for (String key:keys ) {
+				retval += key +" ==: [" + vars.get(key) +"]," ;
+			}
+		}catch(Throwable e) {}
 		return retval;
 	}
 
