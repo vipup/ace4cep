@@ -12,42 +12,16 @@
 	<div style="text-align: top; width: 100%">
 		<div style="text-align: left; width: 80px;">
 		</div>
-		<div id="editor" class="embedded_ace_code" style="height: 348px;">--- string-OPs
-		select 
-		    count(*) c, uid / 3 u3, type, 
-		    ip_src.substring(0,ip_src.indexOf(".")) ipA,
-		    ip_src.substring(ip_src.lastIndexOf(".")+1) ipD
-		from MyEvent#time(3 sec) where size > 4;
- 
-		
-		--- MyEvent sample
-		select count(*), type from MyEvent#time(3 sec) where size > 4;
-		-- myFunction sample
-		 select myFunction(value,e) from MyEvent;
-		 select type.replaceAll("A","aaaaaaaaaaaaaaaaa") from MyEvent;
-		 
-		---10.2.2.2. Last Aggregation Function 
-select first(*), last(*) from SensorEvent#time(10 sec)  
-		---
-insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
-c, 2-1 d,  3*111 e from pattern[every timer:interval(1 sec)] ; 
---- cooment 
-  
-/// --- comment 2233333
-insert into TriggerStreaMAT select "A" a, 2/7 b, 2+3
+		<div id="editor" class="embedded_ace_code" style="height: 348px;">
+--- pattern using example
+--- .stmt_21.6#2:[{a.e=='30003.3'},{sum(a.e*b.temperature)=='2628138.508860812'}]
+select a.e, sum(a.e * b.temperature)
+from pattern [every a=MyEvent -> 
+    b=SensorEvent(temperature < a.e) where timer:within(11 sec)]#time(2 sec) 
+where a.type in ('A', 'b', "c" )
+group by a.e
+having sum(a.e +1) > 100
 
-c, 2-1 d,  3*111 e from pattern[every timer:interval(3 sec)];  
- 
---create variable boolean myvar2 = true;
-create variable boolean myvar0 = false;
-create variable boolean myvar1 = false;
-create variable boolean myvar2 = false;
-
-@Name("select-streamstar+outputvar")
- select current_timestamp() , a.* 
-    from   pattern[every timer:interval(10 sec)] a 
-    output after 3 events when myvar0=false 
-    then set myvar1=false, myvar2=false 
     			</div>
 		<div style="text-align: bottom; width: 480px;">
 			<button class="button button3" onmousedown="cep_exec()"
