@@ -28,7 +28,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement; 
 import com.espertech.esper.client.UpdateListener;
- 
+import com.espertech.esper.client.dataflow.EPDataFlowInstance;
 import com.mycompany.MyClass;
 import com.mycompany.MyKafkaEvent;
 import com.mycompany.Sensor;
@@ -189,6 +189,29 @@ public class ChatAnnotation {
    		 	exec_who(message);
     	}else if ("help".equals(message)) { 
     		responce("available commands: help, who, stopall, startall, killall, hide{all}");
+    		responce("for DataFlow :: sdf:-showDataFlow(s),  i:-instantiate, r:-run, s:-start, c:-cancel, j:-join ");
+//EPDataFlowInstance instance = epService.getEPRuntime().getDataFlowRuntime()    		
+    	}else if ("sdf".equals(message)) { // show DataFlows
+    		String[] dfTmp = this.getKeeper().getCepRT().getDataFlowRuntime().getDataFlows();
+    		responce(CepPair.array2string( dfTmp )); 
+    	}else if ((""+message).startsWith("i:" )) { // show DataFlows
+    		String dataFlowName = message.substring("i:".length() );
+			EPDataFlowInstance retval = this.getKeeper().getCepRT().getDataFlowRuntime().instantiate(dataFlowName );
+			
+    		responce(  "EPDataFlowInstance =:"+retval 
+    				+ " ::: "+ map2string( retval.getParameters() )); 
+    	}else if ((""+message).startsWith("r:" )) { // TODO
+    		responce("Not implemented yet...");
+    	}else if ((""+message).startsWith("s:" )) { // TODO
+    		responce("Not implemented yet...");
+    	}else if ((""+message).startsWith("c:" )) { // TODO
+    		responce("Not implemented yet...");
+    	}else if ((""+message).startsWith("j:" )) { // TODO
+    		responce("Not implemented yet...");
+    	}else if ((""+message).startsWith("r:" )) { // TODO
+    		responce("Not implemented yet...");
+    	}else if ((""+message).startsWith("r:" )) { // TODO
+    		responce("Not implemented yet...");
     	}else if ("ss".equals(message)) { // show statements
     		exec_ss(message);
     	}else if ("se".equals(message)) { // show eventtypes
@@ -230,11 +253,11 @@ public class ChatAnnotation {
 			if (line.startsWith("//"))continue;
 			if (line.endsWith(";")) {
 				line = line.substring(0, line.length()-1); 
-				nextEQL += line + " ";
+				nextEQL += line + "\n ";
 				retval.add(nextEQL);
 				nextEQL="";
 			}else {
-				nextEQL += line + " ";
+				nextEQL += line + "\n ";
 			}
 			nextEQL += " ";
 		}

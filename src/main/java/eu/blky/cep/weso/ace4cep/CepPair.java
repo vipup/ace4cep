@@ -19,7 +19,7 @@ public class CepPair {
 		retval += array2string(listSet.toArray());
 		return retval ;
 	}
-	String array2string(Object []oPar){
+	public static String array2string(Object []oPar){
 		String retval = "";
 		for (Object o:oPar)retval+=o+" , ";
 		return retval;
