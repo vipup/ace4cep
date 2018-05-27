@@ -26,8 +26,9 @@ public class KafkaProducerExample {
                 System.out.print("> ");
                 String text = sc.nextLine();
 
-                ProducerRecord<String, String> recordToSend = new ProducerRecord<String, String>(TOPIC_NAME, "message",
-                        text + " , timeInMillis=" + System.currentTimeMillis());
+                ProducerRecord<String, String> recordToSend = 
+                		new ProducerRecord<String, String>(TOPIC_NAME, "message",
+                				text );
                 try {
                     // synchronous send.... get() waits for the computation to
                     // finish

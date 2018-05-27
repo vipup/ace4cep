@@ -13,6 +13,12 @@
 		<div style="text-align: left; width: 80px;">
 		</div>
 		<div id="editor" class="embedded_ace_code" style="height: 348px;">
+----
+@Name ("The_KaF-KA") select  percent(1.0* 1, 3.00001 + new Integer(value)) MyFun , value.split(",").size()   from MyKafkaEvent  ; 
+ 	 	
+--- kafka reader
+select  value, 3 + new Integer(value), value.split(",").size()   from MyKafkaEvent
+		
 --- pattern using example
 --- .stmt_21.6#2:[{a.e=='30003.3'},{sum(a.e*b.temperature)=='2628138.508860812'}]
 select a.e, sum(a.e * b.temperature)
