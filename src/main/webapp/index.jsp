@@ -13,21 +13,16 @@
 		<div style="text-align: left; width: 80px;">
 		</div>
 		<div id="editor" class="embedded_ace_code" style="height: 348px;">
-----
-@Name ("The_KaF-KA") select  percent(1.0* 1, 3.00001 + new Integer(value)) MyFun , value.split(",").size()   from MyKafkaEvent  ; 
- 	 	
---- kafka reader
-select  value, 3 + new Integer(value), value.split(",").size()   from MyKafkaEvent
-		
---- pattern using example
---- .stmt_21.6#2:[{a.e=='30003.3'},{sum(a.e*b.temperature)=='2628138.508860812'}]
-select a.e, sum(a.e * b.temperature)
-from pattern [every a=MyEvent -> 
-    b=SensorEvent(temperature < a.e) where timer:within(11 sec)]#time(2 sec) 
-where a.type in ('A', 'b', "c" )
-group by a.e
-having sum(a.e +1) > 100
 
+--4.2.4. Category Segmented Context
+create context CategoryByTemp
+  group temperature < 65 as cold,
+  group temperature between 65 and 85 as normal,
+  group temperature > 85 as high
+  from SensorEvent;
+  // using
+  context CategoryByTemp select context.name,sensor, count(*), temperature, context.label from SensorEvent.win:time(5 sec)
+  
     			</div>
 		<div style="text-align: bottom; width: 480px;">
 			<button class="button button3" onmousedown="cep_exec()"
