@@ -44,13 +44,16 @@ public class Sensor {
 	        @Override
 	        public void run() {
 	        	checkCount++; 
-	        	double temperature = random.nextDouble() * 10 + 80;
+	        	double temperature = random.nextDouble() * 35 + 60;
 	        	Map<String, Object>  theEvent = new LinkedHashMap<String, Object>();
 	        	theEvent.put("temperature", temperature);
-	        	theEvent.put("sensor", sensors[random.nextInt(sensors.length)]);
+	        	int nextInt = random.nextInt(sensors.length);
+				theEvent.put("sensor", sensors[nextInt]);
 	        	// com.espertech.esper.client.EPException: Event type named 'SensorEvent' has not been defined or is not a Map event type, the name 'SensorEvent' has not been defined as an event type
 	        	//theEvent.put("checkCount", checkCount );
+				
 	        	try {
+	        		Thread.sleep(1000*nextInt);
 	        		rt.sendEvent(theEvent , SENSOR_EVENT);
 	        	}catch(Throwable e) {
 	        		e.printStackTrace();

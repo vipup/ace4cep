@@ -18,10 +18,35 @@
 create context CategoryByTemp
   group temperature < 65 as cold,
   group temperature between 65 and 85 as normal,
-  group temperature > 85 as high
+  group temperature > 85 as hot
   from SensorEvent;
   // using
-  context CategoryByTemp select context.name,sensor, count(*), temperature, context.label from SensorEvent.win:time(5 sec)
+  context CategoryByTemp 
+  select 
+    context.name,sensor, count(*), temperature, context.label 
+    from SensorEvent#time_batch(5 second);
+    
+  -----
+  insert into Sample 
+select temperature temp, sensor  from SensorEvent  ;
+// 
+insert into XXX select *
+from  pattern[
+every (
+    sample=Sample(temp > 50) 
+    ->
+     
+    ( 
+        Sample(sensor=sample.sensor,  temp > 50) and not 
+        Sample(sensor=sample.sensor, temp <= 50)
+    )   
+    ->
+   (
+        Sample(sensor=sample.sensor, temp > 50) and not 
+        Sample(sensor=sample.sensor, temp <= 50)
+    )   
+ ) where timer:within(90 seconds)
+]
   
     			</div>
 		<div style="text-align: bottom; width: 480px;">
