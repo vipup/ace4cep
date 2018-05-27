@@ -13,17 +13,20 @@
 		<div style="text-align: left; width: 80px;">
 		</div>
 		<div id="editor" class="embedded_ace_code" style="height: 348px;">
------------IP
--- create variable double PI = 1;
--- create variable double acc = 0.0;
--- on NewOutputRateEvent set acc = 4.0 * (1 - (PI % 2) * 2) / (2 * PI + 1);
-create schema PageHitEvent as (ipAddress string, ip string, userId String, numAttempts int);
-create variable PageHitEvent varPageHitZero;
-on PageHitEvent(ip='0.0.0.0') pagehit set varPageHitZero = pagehit;
-insert into PageHitEvent select ip_src ip from MyEvent;
--------------------
+		--- PI calc ala :  https://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
+create schema PI as ( acc double,  i int,  maxI int);
+create variable PI pi;
+insert into IP1
+   select 
+    acc  +  4.0 * (1 - (i % 2) * 2) / (2 * i + 1)  acc,
+    i +1 i,
+    maxI
+   from PI where i &lt; maxI
+;
 
-  
+insert into PI select * from IP1 where (i &lt; maxI);
+
+insert into PI select 0.000000000000000001123 acc, 0 i,  new Integer(value)  maxI  from MyKafkaEvent;
     			</div>
 		<div style="text-align: bottom; width: 480px;">
 			<button class="button button3" onmousedown="cep_exec()"
