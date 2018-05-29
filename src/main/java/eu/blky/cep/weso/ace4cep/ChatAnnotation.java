@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map; 
-import java.util.Set; 
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,6 +48,8 @@ public class ChatAnnotation {
             new CopyOnWriteArraySet<ChatAnnotation>();
 
 	private static final String CEP_KEEPER = "CEP_KEEPER";
+
+	private static final String DELIM = "^";
 
     private String nickname;
     private Session session;
@@ -188,8 +191,8 @@ public class ChatAnnotation {
     	if ("who".equals(message)) { // list of registered sessions
    		 	exec_who(message);
     	}else if ("help".equals(message)) { 
-    		responce("available commands: help, who, stopall, startall, killall, hide{all}");
-    		responce("for DataFlow :: sdf:-showDataFlow(s),  i:-instantiate, r:-run, s:-start, c:-cancel, j:-join ");
+    		responce("?"+DELIM+"available commands: help, who, stopall, startall, killall, hide{all}");
+    		responce("?"+DELIM+"for DataFlow :: sdf:-showDataFlow(s),  i:-instantiate, r:-run, s:-start, c:-cancel, j:-join ");
 //EPDataFlowInstance instance = epService.getEPRuntime().getDataFlowRuntime()    		
     	}else if ("sdf".equals(message)) { // show DataFlows
     		String[] dfTmp = this.getKeeper().getCepRT().getDataFlowRuntime().getDataFlows();
@@ -198,20 +201,20 @@ public class ChatAnnotation {
     		String dataFlowName = message.substring("i:".length() );
 			EPDataFlowInstance retval = this.getKeeper().getCepRT().getDataFlowRuntime().instantiate(dataFlowName );
 			// TODO :((( 100% CPU @  --MyDataFlow-20.3.7. Select ----------------------  retval.start();
-    		responce(  "EPDataFlowInstance =:"+retval 
+    		responce("i"+DELIM+  "EPDataFlowInstance =:"+retval 
     				+ " ::: "+ map2string( retval.getParameters() )); 
     	}else if ((""+message).startsWith("r:" )) { // TODO
-    		responce("Not implemented yet...");
+    		responce(message+DELIM+"Not implemented yet...");
     	}else if ((""+message).startsWith("s:" )) { // TODO
-    		responce("Not implemented yet...");
+    		responce(message+DELIM+"Not implemented yet...");
     	}else if ((""+message).startsWith("c:" )) { // TODO
-    		responce("Not implemented yet...");
+    		responce(message+DELIM+"Not implemented yet...");
     	}else if ((""+message).startsWith("j:" )) { // TODO
-    		responce("Not implemented yet...");
+    		responce(message+DELIM+"Not implemented yet...");
     	}else if ((""+message).startsWith("r:" )) { // TODO
-    		responce("Not implemented yet...");
+    		responce(message+DELIM+"Not implemented yet...");
     	}else if ((""+message).startsWith("r:" )) { // TODO
-    		responce("Not implemented yet...");
+    		responce(message+DELIM+"Not implemented yet...");
     	}else if ("ss".equals(message)) { // show statements
     		exec_ss(message);
     	}else if ("se".equals(message)) { // show eventtypes
@@ -294,10 +297,15 @@ public class ChatAnnotation {
 	private String map2string(Map  vars) {
 		String retval = "";
 		try {
-			Set<String> keys = vars.keySet();
+			TreeMap sortedMap = new TreeMap();
+			sortedMap.putAll(vars);
 			
+			Set<String> keys = sortedMap.keySet();
+			String PREFIX ="";
+
 			for (String key:keys ) {
-				retval += key +" ==: [" + vars.get(key) +"]," ;
+				retval += PREFIX + key +" ==: [" + vars.get(key) +"]" ;
+				PREFIX = ",\n";
 			}
 		}catch(Throwable e) {}
 		return retval;
@@ -336,34 +344,34 @@ public class ChatAnnotation {
 	private void exec_startall(String message) {
 		CepKeeper cepKeeper = getKeeper();
 		cepKeeper.getCepAdm().startAllStatements();
-		exec_ss(message);
+		exec_ss( message);
 	}
 
 	
 	private void exec_stopall(String message) {
 		CepKeeper cepKeeper = getKeeper();
 		cepKeeper.getCepAdm().stopAllStatements();
-		exec_ss(message);
+		exec_ss( message);
 	}
 
 	private void exec_killall(String message) {
 		CepKeeper cepKeeper = getKeeper();
 		cepKeeper.getCepAdm().destroyAllStatements();
-		exec_ss(message);
+		exec_ss( message);
 	}
 	
 	private void exec_ss(String message) {
 		CepKeeper cepKeeper = getKeeper(); 
 		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames(); 
 		HashMap<String, CepPair> listeners = listAllListeners(StatementNames);
-		responce(map2string(listeners )); 
+		responce(message+DELIM+map2string(listeners )); 
 	}
 	
 	private void exec_se(String message) {
 		CepKeeper cepKeeper = getKeeper(); 
 		Configuration cfg = cepKeeper .getCepConfig();
 		Map<String, String> etn = cfg .getEventTypeNames();		
-		responce(map2string(etn)); 
+		responce(message+DELIM+map2string(etn)); 
 	}
  
 

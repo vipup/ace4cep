@@ -1,6 +1,7 @@
 var Chat = {};
 Chat.socket = null;
 var MYCHATURI= '/ace4cep/websocket/chat';
+var DELIM= '^';
 
 Chat.connect = (function(host) {
 	if ('WebSocket' in window) {
@@ -68,8 +69,8 @@ Chat.sendMultilineMessage = (function(messagePar) {
 var ChatConsole = {};
 // create initial Chat-panel
 ChatConsole.log = (function(message) {
-	var usernameTmp =  message.slice(0,message.indexOf(":"));
-	var textTmp =  message.slice(message.indexOf(":")+1);
+	var usernameTmp =  message.slice(0,message.indexOf(DELIM));
+	var textTmp =  message.slice(message.indexOf(DELIM)+1);
 	var ViewConsole = document.getElementById('ViewConsole');
 		
 	// add into message-pane
@@ -89,9 +90,9 @@ ChatConsole.log = (function(message) {
 					'<div>'+
 						'<a class="label" href="#">'+
 						usernameTmp+
-						'</a><span class="spacer">:</span>'+
+						'</a><span class="spacer">:</span><pre id="embedded_ace_code"   class=" ace_editor ace-tm" draggable="false">'+
 						textTmp+
-					'</div>' ;
+					'</pre></div>' ;
 		var liTmp = document.createElement('li');
 		liTmp.innerHTML = messageTmp; 
 		ViewConsole.insertBefore(liTmp, ViewConsole.childNodes[0]) ;

@@ -26,7 +26,7 @@ public class Defaulistener implements UpdateListener {
 		
 		updateCounter++;
 		String suffix ="";
-		String retval =""+uid+"#"+updateCounter+":[";
+		String retval =""+uid+"^"+updateCounter+":[";
 		for (Object e:newEvents) { 
 			MapEventBean eBean = (MapEventBean)e;
 			
