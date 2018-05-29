@@ -231,7 +231,8 @@ public class ChatAnnotation {
     		    		EPStatement priceSTMT = createEPStatement(eqlTmp); 
     		    		Messenger proxyTmp = getMessanger(priceSTMT.getName());
     		    		UpdateListener ulTmp = new Defaulistener(proxyTmp);
-    		    		priceSTMT.addListener(ulTmp );    
+    		    		priceSTMT.addListener(ulTmp );   
+    		    		new ThroughputQuotedListener(priceSTMT, 10000);
     		    		responce(ulTmp.toString());
     		}
     	}catch (Exception e) {
