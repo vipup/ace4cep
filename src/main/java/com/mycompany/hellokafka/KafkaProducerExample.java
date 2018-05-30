@@ -12,7 +12,6 @@ import org.apache.kafka.clients.producer.RecordMetadata;
  * Kafka hello world message producer
  */
 public class KafkaProducerExample {
-	 private final static String TOPIC_NAME = "topic_name";
 
     public static void main(String[] args) {
         // produce a test message
@@ -27,7 +26,7 @@ public class KafkaProducerExample {
                 String text = sc.nextLine();
 
                 ProducerRecord<String, String> recordToSend = 
-                		new ProducerRecord<String, String>(TOPIC_NAME, "message",
+                		new ProducerRecord<String, String>(KafkaConsumerExample.TOPIC_NAME, "message",
                 				text );
                 try {
                     // synchronous send.... get() waits for the computation to

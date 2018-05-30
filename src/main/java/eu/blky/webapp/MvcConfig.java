@@ -7,17 +7,23 @@ import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.mycompany.MyKafkaDefaultConsumer;
+import com.mycompany.MyKafkaDefaultProducer;
  
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = { "eu.blky.cep.weso.ace4cep",  "com.mycompany"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 	
-  @Bean(name = "kafkaDefaultConsumer")
-  @Primary
-  public MyKafkaDefaultConsumer getMultipartResolver() {
-      return new MyKafkaDefaultConsumer();
-  }	
+	  @Bean(name = "kafkaDefaultConsumer")
+	  @Primary
+	  public MyKafkaDefaultConsumer getConsumer() {
+	      return new MyKafkaDefaultConsumer();
+	  }	
+	  @Bean(name = "kafkaDefaultProducer")
+	  @Primary
+	  public MyKafkaDefaultProducer getProducer() {
+	      return new MyKafkaDefaultProducer();
+	  }	
  
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

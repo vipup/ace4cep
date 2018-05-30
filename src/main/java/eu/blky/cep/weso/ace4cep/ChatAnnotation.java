@@ -144,7 +144,7 @@ public class ChatAnnotation {
 		//setupKafkaInput(cepConfig);
 		//setupKafkaOutput(cepConfig);
 		
-        responce( setupMyKafkaEvent(epRuntime ) );
+        //responce( setupMyKafkaEvent(epRuntime ) );
 		
 	    return keeper.getCepRT();
 	}
