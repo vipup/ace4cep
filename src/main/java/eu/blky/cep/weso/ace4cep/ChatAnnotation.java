@@ -1,8 +1,7 @@
 package eu.blky.cep.weso.ace4cep;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.URI;
+ 
 import java.util.ArrayList;
 import java.util.HashMap; 
 import java.util.LinkedHashMap;
@@ -21,34 +20,36 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory; 
+import org.apache.juli.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.ConfigurationOperations;
 import com.espertech.esper.client.EPAdministrator;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EPListenable;
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventBean;
+ 
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.client.dataflow.EPDataFlowInstance;
-import com.espertech.esper.epl.expression.core.ExprEvaluatorContext;
-import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.pattern.PatternAgentInstanceContext;
-import com.espertech.esper.pattern.PatternExpressionUtil;
-import com.espertech.esper.pattern.observer.EventObserver;
-import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
+ 
 import com.mycompany.MyClass;
-import com.mycompany.MyKafkaEvent;
+import com.mycompany.MyKafkaDefaultConsumer;
+ 
 import com.mycompany.Sensor;
  
  
   
  
 @ServerEndpoint(value = "/websocket/chat")
+@Component
 public class ChatAnnotation {
+	
 
     private static final Log LOG = LogFactory.getLog(ChatAnnotation.class);
 
@@ -68,6 +69,10 @@ public class ChatAnnotation {
 
 	private List<Messenger> activeMessengers =  new ArrayList<Messenger>();
 
+    @Autowired
+//    @Qualifier("kafkaDefaultConsumer")
+    private MyKafkaDefaultConsumer kafkaHook;
+
     public ChatAnnotation() {
         nickname = GUEST_PREFIX + connectionIds.getAndIncrement();
     }
@@ -83,13 +88,25 @@ public class ChatAnnotation {
         broadcast(message);
     }
 
+//    public void setSessionProp(String name, Object o) {
+//    	Map<String, Object> props = this.getSession().getUserProperties();
+//    	props .put(name,o);		
+//    }
+//    public Object getSessionProp(String name) {
+//    	Map<String, Object> props = this.getSession().getUserProperties();
+//    	Object retval = props .get(name);
+//		return retval ;
+//    }
+    
     private void destroySession() {
     	hookToKill.stopMonitoring();
-    	kafkaHook.stopMonitoring();
     	mySensor.stop();
+    	// stop /destroy / passivate / deactivate session-vars
+    	kafkaHook.removeListener(getKeeper().getCepRT());
     	
-    	Map<String, Object> props = this.getSession().getUserProperties();
+    	//  TODO refactor to Destroyable
     	getKeeper().destroy();
+    	Map<String, Object> props = this.getSession().getUserProperties();
     	props.remove(CEP_KEEPER);
     }
     private void initSession() {
@@ -98,7 +115,7 @@ public class ChatAnnotation {
 		props.put(CEP_KEEPER, newKeeper ); 
 		initCEP();
 	}
-	MyKafkaEvent kafkaHook = new  MyKafkaEvent(null);
+	
 	private EPRuntime initCEP(){  
 		//getKeeper().getCepConfig().addEventType("OrderTick", OrderTick.class.getName()); 
 		// CFG-> SP -> RT 
@@ -115,44 +132,42 @@ public class ChatAnnotation {
 
         ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();
 		// Fake EventType definition  --------------------- Sensor
-        setupMySensor(epRuntime, configurationTmp );	 	
+        responce( setupMySensor(epRuntime, configurationTmp ));	 	
 		
 		// Fake EvenrType def --------------- MyEvent.somefield
-		setupMyEvent(epRuntime, configurationTmp);
+        responce( setupMyEvent(epRuntime, configurationTmp) );
 		
 		// http://esper.espertech.com/release-7.1.0/esper-reference/html/extension.html#extension-virtualdw
 		// 17.3.2. Configuring the Single-Row Function Name
-		setupMyClass(configurationTmp);
+        responce( setupMyClass(configurationTmp) );
 
 		//setupKafkaInput(cepConfig);
 		//setupKafkaOutput(cepConfig);
 		
-		setupMyKafkaEvent(epRuntime, configurationTmp);
+        responce( setupMyKafkaEvent(epRuntime ) );
 		
 	    return keeper.getCepRT();
 	}
 
 
-	private void setupMyKafkaEvent(EPRuntime epRuntime, ConfigurationOperations configurationTmp) {
+	private String setupMyKafkaEvent(EPRuntime epRuntime) {
+		// CFG-> SP -> RT 
+		//       +---> ADM
+		CepKeeper keeper = getKeeper();
+		EPServiceProvider cep = keeper.getCep();
+		EPAdministrator epAdministrator = cep.getEPAdministrator(); 
+        ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();		
 		configurationTmp.addEventType("MyKafkaEvent", com.mycompany.MyKafkaEvent.class);
-		kafkaHook.startMonitoring(epRuntime);
+		//MyKafkaEvent kafkaHook = (MyKafkaEvent) props.get("kafkaHook");
+		
+
+		kafkaHook.addListener(epRuntime);
+		return "hi from MyKafkaEvent";
 
 	}
 
-//	public EventObserver makeObserver(PatternAgentInstanceContext context, MatchedEventMap beginState,
-//			ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState) {
-//		EventBean[] filenameExpression;
-//		ExprEvaluatorContext convertor;
-//		Object filename = null;// PatternExpressionUtil.evaluate("File-exists observer ", beginState,
-//								// filenameExpression, convertor);
-//		if (filename == null) {
-//			throw new EPException("Filename evaluated to null");
-//		}
-//
-//		return new MyFileExistsObserver(beginState, observerEventEvaluator, filename.toString());
-//	}
-
-	private ConfigurationOperations setupMySensor(EPRuntime epRuntime, ConfigurationOperations configurationTmp ) {
+ 
+	private String setupMySensor(EPRuntime epRuntime, ConfigurationOperations configurationTmp ) {
 		Map<String, Object> definition = new LinkedHashMap<String, Object>();
         definition.put("sensor", String.class);
         definition.put("temperature", double.class);
@@ -160,11 +175,11 @@ public class ChatAnnotation {
 		configurationTmp.addEventType(Sensor.SENSOR_EVENT, definition);
 		mySensor = Sensor.getInstance();
 		mySensor.startMonitoring(epRuntime);
-		return configurationTmp;
+		return "hi from "+Sensor.SENSOR_EVENT;
 	}
 
 
-	private void setupMyClass(ConfigurationOperations configurationTmp) {
+	private String setupMyClass(ConfigurationOperations configurationTmp) {
 		try {
 			String className = MyClass.class.getName();
 			configurationTmp.addPlugInSingleRowFunction( "myFunction", className, "myFunction");
@@ -175,18 +190,21 @@ public class ChatAnnotation {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		return  "hi from "+MyClass.class.getName();
 	}
 
 
-	private void setupMyEvent(EPRuntime epRuntime, ConfigurationOperations configurationTmp) {
+	private String  setupMyEvent(EPRuntime epRuntime, ConfigurationOperations configurationTmp) {
 		configurationTmp.addEventType("MyEvent", com.mycompany.MyEvent.class);
 		hookToKill = new com.mycompany.MyEvent(111111);
 		hookToKill.startMonitoring(epRuntime);
+		return  "hi from MyEvent" ;
 	}    
 
   
 	
 	com.mycompany.MyEvent hookToKill ;
+	
 	Sensor mySensor ;
 
 	@OnClose
@@ -328,7 +346,7 @@ public class ChatAnnotation {
 			String PREFIX ="";
 
 			for (String key:keys ) {
-				retval += PREFIX + key +" ==: [" + vars.get(key) +"]" ;
+				retval += PREFIX + " -- "+ key +" ==: [\n" + vars.get(key) +"]" ;
 				PREFIX = ",\n";
 			}
 		}catch(Throwable e) {}

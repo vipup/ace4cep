@@ -6,46 +6,66 @@
 	<version>0.1.0</version>
 	<packaging>war</packaging>
 	<properties>
-	 	<servlet-api-version>3.0.1</servlet-api-version>
-	 	<junit.version>4.8.1</junit.version>
+		<servlet-api-version>3.0.1</servlet-api-version>
+		<junit.version>4.8.1</junit.version>
 	</properties>
 
 	<dependencies>
+		<!-- springMVC++ -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>4.0.1.RELEASE</version>
+		</dependency>
+<!-- 		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency> -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+
+		<!-- -->
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 
 			<version>${junit.version}</version>
-		</dependency>	
-	
-	<!--  https://doc.akka.io/docs/akka/2.5.13/guide/tutorial_1.html  -->
-<dependency>
-  <groupId>com.typesafe.akka</groupId>
-  <artifactId>akka-actor_2.12</artifactId>
-  <version>2.5.13</version>
-</dependency>
-	
-	
-<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
-<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
-<dependency>
-    <groupId>org.apache.kafka</groupId>
-    <artifactId>kafka-clients</artifactId>
-    <version>0.10.2.1</version>
-</dependency>
+		</dependency>
 
-<!-- https://mvnrepository.com/artifact/com.espertech/esperio-kafka -->
-<dependency>
-    <groupId>com.espertech</groupId>
-    <artifactId>esperio-kafka</artifactId>
-    <version>7.1.0</version>
-</dependency>
-	
+		<!-- https://doc.akka.io/docs/akka/2.5.13/guide/tutorial_1.html -->
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-actor_2.12</artifactId>
+			<version>2.5.13</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.10.2.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.espertech/esperio-kafka -->
+		<dependency>
+			<groupId>com.espertech</groupId>
+			<artifactId>esperio-kafka</artifactId>
+			<version>7.1.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
 			<version>7.0.0</version>
-		</dependency>	
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -53,13 +73,13 @@
 			<version>8.5.15</version>
 			<!-- <scope>provided</scope> -->
 		</dependency>
-	
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet-api-version}</version>
 			<scope>provided</scope>
-		</dependency> 
+		</dependency>
 	</dependencies>
 
 	<build>

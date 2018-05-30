@@ -80,20 +80,23 @@ ChatConsole.log = (function(message) {
 				"<img src=\"/rrdsaas/speed.gif\"/>"+
 				"<p>" + textTmp + "</p>"+
 				"</div>";
-		var liTmp = document.createElement('li');
+		var liTmp = document.createElement('div');
 		liTmp.innerHTML = messageTmp;
 		ViewConsole.insertBefore(liTmp, ViewConsole.childNodes[0]) ;
 	}else
 	{	// add into console
-		var messageTmp = 
-				'<small data-timestamp="'+new Date()+'">'+(new Date()).toTimeString()+'</small>'+
-					'<div>'+
-						'<a class="label" href="#">'+
+		var messageTmp =  
+						'<small><a class="label" href="#">'+
 						usernameTmp+
-						'</a><span class="spacer">:</span><pre id="embedded_ace_code"   class=" ace_editor ace-tm" draggable="false">'+
+						'</a>'+'</small>'+						
+						'<span class="spacer">:</span>'+
+						'<small data-timestamp="'+new Date()+'">'+(new Date()).toTimeString()+'</small>'+
+						'<div>'+
+						'<pre id="embedded_ace_code"   class=" ace_editor ace-tm" draggable="false">'+
 						textTmp+
-					'</pre></div>' ;
-		var liTmp = document.createElement('li');
+						'</pre> ' +
+						'<div>';
+		var liTmp = document.createElement('div');
 		liTmp.innerHTML = messageTmp; 
 		ViewConsole.insertBefore(liTmp, ViewConsole.childNodes[0]) ;
 	}

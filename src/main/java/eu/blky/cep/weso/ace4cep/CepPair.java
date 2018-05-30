@@ -15,7 +15,7 @@ public class CepPair {
 	
 	public String toString() {
 		
-		String retval = name+":"+text+" ==> ";
+		String retval = text+";\n \t-- > ";
 		retval += array2string(listSet.toArray());
 		return retval ;
 	}
