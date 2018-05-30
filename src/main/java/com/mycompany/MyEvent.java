@@ -1,5 +1,8 @@
 package com.mycompany;
  
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -8,8 +11,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import com.espertech.esper.client.EPRuntime;
 
-public class MyEvent {
+public class MyEvent implements Serializable{
 	static final ThreadGroup t1 = new ThreadGroup("always running MyEventThread" );
+	
+	private Map props = new HashMap();
+	private Object[] array = new Object[10];	
 
 	private EPRuntime rt;
 
@@ -227,6 +233,42 @@ public class MyEvent {
 	 */
 	public void setAmount(double amount) {
 		this.amount = amount;
+	}
+// http://esper.espertech.com/release-5.0.0/esper-reference/html/event_representation.html
+	  public void setProps(String name, Object value) {
+		    props.put(name, value);
+		  }
+
+		  public void setArray(int index, Object value) {
+		    array[index] = value;
+		  }	
+	
+	/**
+	 * @return the props
+	 */
+	public Map getProps() {
+		return props;
+	}
+
+	/**
+	 * @param props the props to set
+	 */
+	public void setProps(Map props) {
+		this.props = props;
+	}
+
+	/**
+	 * @return the array
+	 */
+	public Object[] getArray() {
+		return array;
+	}
+
+	/**
+	 * @param array the array to set
+	 */
+	public void setArray(Object[] array) {
+		this.array = array;
 	}
 
 }

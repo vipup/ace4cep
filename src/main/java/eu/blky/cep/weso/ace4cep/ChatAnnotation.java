@@ -1,6 +1,8 @@
 package eu.blky.cep.weso.ace4cep;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap; 
 import java.util.LinkedHashMap;
@@ -24,12 +26,20 @@ import org.apache.juli.logging.LogFactory;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.ConfigurationOperations;
 import com.espertech.esper.client.EPAdministrator;
+import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement; 
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.client.dataflow.EPDataFlowInstance;
+import com.espertech.esper.epl.expression.core.ExprEvaluatorContext;
+import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.pattern.PatternAgentInstanceContext;
+import com.espertech.esper.pattern.PatternExpressionUtil;
+import com.espertech.esper.pattern.observer.EventObserver;
+import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
 import com.mycompany.MyClass;
 import com.mycompany.MyKafkaEvent;
 import com.mycompany.Sensor;
@@ -54,7 +64,7 @@ public class ChatAnnotation {
     private String nickname;
     private Session session;
 
-	private int engineCounter;
+	private static int engineCounter;
 
 	private List<Messenger> activeMessengers =  new ArrayList<Messenger>();
 
@@ -65,7 +75,7 @@ public class ChatAnnotation {
 
     @OnOpen
     public void start(Session session) {
-        this.session = session;
+        this.setSession(session);
         nickname = session.getUserPrincipal().getName()+"#"+session.getId();
         initSession();
         connections.add(this);
@@ -78,18 +88,14 @@ public class ChatAnnotation {
     	kafkaHook.stopMonitoring();
     	mySensor.stop();
     	
-    	Map<String, Object> props = this.session.getUserProperties();
+    	Map<String, Object> props = this.getSession().getUserProperties();
     	getKeeper().destroy();
     	props.remove(CEP_KEEPER);
     }
     private void initSession() {
-    	Map<String, Object> props = this.session.getUserProperties();
+    	Map<String, Object> props = this.getSession().getUserProperties();
 		CepKeeper newKeeper = new CepKeeper();
-		Configuration cepConfig = new Configuration(); // com.espertech.esper.client
-
-		props.put(CEP_KEEPER, newKeeper );
-		// <bean name="cepConfiguration" class="com.espertech.esper.client.Configuration" />
-		newKeeper .setCepConfig(cepConfig );
+		props.put(CEP_KEEPER, newKeeper ); 
 		initCEP();
 	}
 	MyKafkaEvent kafkaHook = new  MyKafkaEvent(null);
@@ -133,7 +139,18 @@ public class ChatAnnotation {
 
 	}
 
- 
+//	public EventObserver makeObserver(PatternAgentInstanceContext context, MatchedEventMap beginState,
+//			ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState) {
+//		EventBean[] filenameExpression;
+//		ExprEvaluatorContext convertor;
+//		Object filename = null;// PatternExpressionUtil.evaluate("File-exists observer ", beginState,
+//								// filenameExpression, convertor);
+//		if (filename == null) {
+//			throw new EPException("Filename evaluated to null");
+//		}
+//
+//		return new MyFileExistsObserver(beginState, observerEventEvaluator, filename.toString());
+//	}
 
 	private ConfigurationOperations setupMySensor(EPRuntime epRuntime, ConfigurationOperations configurationTmp ) {
 		Map<String, Object> definition = new LinkedHashMap<String, Object>();
@@ -148,12 +165,16 @@ public class ChatAnnotation {
 
 
 	private void setupMyClass(ConfigurationOperations configurationTmp) {
-		String className = MyClass.class.getName();
-		configurationTmp.addPlugInSingleRowFunction( "myFunction", className, "myFunction");
-		configurationTmp.addPlugInSingleRowFunction( "doCompute", className, "doCompute");
-		configurationTmp.addPlugInSingleRowFunction( "doCheck", className, "doCheck");
-		configurationTmp.addPlugInSingleRowFunction( "doSearch", className, "doSearch");
-		configurationTmp.addPlugInSingleRowFunction( "percent", className, "percent");
+		try {
+			String className = MyClass.class.getName();
+			configurationTmp.addPlugInSingleRowFunction( "myFunction", className, "myFunction");
+			configurationTmp.addPlugInSingleRowFunction( "doCompute", className, "doCompute");
+			configurationTmp.addPlugInSingleRowFunction( "doCheck", className, "doCheck");
+			configurationTmp.addPlugInSingleRowFunction( "doSearch", className, "doSearch");
+			configurationTmp.addPlugInSingleRowFunction( "percent", className, "percent");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -162,6 +183,9 @@ public class ChatAnnotation {
 		hookToKill = new com.mycompany.MyEvent(111111);
 		hookToKill.startMonitoring(epRuntime);
 	}    
+
+  
+	
 	com.mycompany.MyEvent hookToKill ;
 	Sensor mySensor ;
 
@@ -182,7 +206,7 @@ public class ChatAnnotation {
 	
 	
     private CepKeeper getKeeper() { 
-		return (CepKeeper) session.getUserProperties().get(CEP_KEEPER);
+		return (CepKeeper) getSession().getUserProperties().get(CEP_KEEPER);
 	}
 
 
@@ -278,7 +302,7 @@ public class ChatAnnotation {
 			public void sendMessage(String string) {
 				if (enabled)
 				try {
-					session.getBasicRemote().sendText("."+statementName+"."+string);
+					getSession().getBasicRemote().sendText("."+statementName+"."+string);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -377,7 +401,7 @@ public class ChatAnnotation {
 
 	private void responce(String filteredMessage) {
 		try {
-			session.getBasicRemote().sendText(filteredMessage);
+			getSession().getBasicRemote().sendText(filteredMessage);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -393,7 +417,7 @@ public class ChatAnnotation {
 				listOfCepStatements += ",";
 				listOfCepStatements += con.nickname;
 			}
-			session.getBasicRemote().sendText("connected: " + listOfCepStatements);
+			getSession().getBasicRemote().sendText("connected: " + listOfCepStatements);
 		} catch (IOException e) {
 			// Ignore
 		}
@@ -444,13 +468,13 @@ public class ChatAnnotation {
         for (ChatAnnotation client : connections) {
             try {
                 synchronized (client) {
-                    client.session.getBasicRemote().sendText(msg);
+                    client.getSession().getBasicRemote().sendText(msg);
                 }
             } catch (IOException e) {
             	LOG.fatal("Chat Error: Failed to send message to client", e);
                 connections.remove(client);
                 try {
-                    client.session.close();
+                    client.getSession().close();
                 } catch (IOException e1) {
                     // Ignore
                 	LOG.error("client.session.close();", e1);
@@ -462,6 +486,23 @@ public class ChatAnnotation {
             }
         }
     }
+
+
+	/**
+	 * @return 
+	 * @return the session
+	 */
+	public synchronized Session getSession() {
+		return session;
+	}
+
+
+	/**
+	 * @param session the session to set
+	 */
+	public synchronized void setSession(Session session) {
+		this.session = session;
+	}
 }
 
 

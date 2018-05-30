@@ -25,7 +25,7 @@ public class CepKeeper {
 	private EPAdministrator cepAdm;
 	// The Configuration is meant only as an initialization-time object.
 	// @Autowired
-	private Configuration cepConfig ;//= new Configuration();
+	private Configuration cepConfig = new Configuration(); // com.espertech.esper.client;//= new Configuration();
 
 	private EPRuntime cepRT;  
 	
@@ -40,11 +40,6 @@ public class CepKeeper {
 	public Configuration getCepConfig() {
 		return cepConfig;
 	}
-
-	public void setCepConfig(Configuration cepConfig) {
-		this.cepConfig = cepConfig;
-	}
-
 
 	public EPRuntime getCepRT() {
 		return cepRT;
