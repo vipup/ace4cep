@@ -1,4 +1,4 @@
-package eu.blky.cep.weso.ace4cep;
+package eu.blky.cep.utils.ws2http;
 
  
 import javax.servlet.http.HttpSession;

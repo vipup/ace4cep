@@ -1,4 +1,4 @@
-package com.mycompany;
+package eu.blky.cep.kafka;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
  
  
 @Component
-public class MyKafkaDefaultProducer {
+public class CepKafkaDefaultProducer {
 	public void send(String text) throws InterruptedException, ExecutionException {
 		Producer<String, String> producer = createProducer();
 		ProducerRecord<String, String> recordToSend = 
-        		new ProducerRecord<String, String>(MyKafkaEvent.TOPIC_NAME, "message",
+        		new ProducerRecord<String, String>(KafkaDefaultEvent.TOPIC_NAME, "message",
         				text );
   
             // synchronous send.... get() waits for the computation to

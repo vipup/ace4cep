@@ -1,4 +1,4 @@
-package eu.blky.cep.weso.ace4cep;
+package eu.blky.cep.listeners;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.event.map.MapEventBean;
+
+import eu.blky.cep.weso.ace4cep.Messenger;
  
 
 public class Defaulistener implements UpdateListener {

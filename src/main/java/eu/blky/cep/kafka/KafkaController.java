@@ -1,4 +1,4 @@
-package com.mycompany.hellokafka;
+package eu.blky.cep.kafka;
  
 import java.util.concurrent.ExecutionException;
 
@@ -11,19 +11,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.mycompany.MyKafkaDefaultConsumer;
-import com.mycompany.MyKafkaDefaultProducer;
  
 @Controller 
 @Scope("singleton")
 public class KafkaController {
 
     @Autowired
-    private MyKafkaDefaultConsumer kafkaReader;
+    private CepKafkaDefaultConsumer kafkaReader;
 
     @Autowired
-    private MyKafkaDefaultProducer kafkaWriter;    
+    private CepKafkaDefaultProducer kafkaWriter;    
 
     @RequestMapping(value = "/init", method = RequestMethod.GET)
     public @ResponseBody String testMestod(HttpServletRequest request){

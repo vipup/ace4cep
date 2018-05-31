@@ -9,7 +9,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.mycompany.MyKafkaDefaultConsumer;
+import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
  
 public class WebAppInitializer implements WebApplicationInitializer {
  
@@ -18,7 +18,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
         // Create the 'root' Spring application context
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         //rootContext.register(ServiceConfig.class, JPAConfig.class, SecurityConfig.class);
-        rootContext.register(MyKafkaDefaultConsumer.class );
+        rootContext.register(CepKafkaDefaultConsumer.class );
         
  
         // Manage the lifecycle of the root application context

@@ -6,23 +6,23 @@ import org.springframework.context.annotation.*;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import com.mycompany.MyKafkaDefaultConsumer;
-import com.mycompany.MyKafkaDefaultProducer;
+import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
+import eu.blky.cep.kafka.CepKafkaDefaultProducer;
  
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = { "eu.blky.cep.weso.ace4cep",  "com.mycompany"})
+@ComponentScan(basePackages = { "eu.blky.cep.weso.ace4cep",  "eu.blky.cep.kafka" })
 public class MvcConfig extends WebMvcConfigurerAdapter {
 	
 	  @Bean(name = "kafkaDefaultConsumer")
 	  @Primary
-	  public MyKafkaDefaultConsumer getConsumer() {
-	      return new MyKafkaDefaultConsumer();
+	  public CepKafkaDefaultConsumer getConsumer() {
+	      return new CepKafkaDefaultConsumer();
 	  }	
 	  @Bean(name = "kafkaDefaultProducer")
 	  @Primary
-	  public MyKafkaDefaultProducer getProducer() {
-	      return new MyKafkaDefaultProducer();
+	  public CepKafkaDefaultProducer getProducer() {
+	      return new CepKafkaDefaultProducer();
 	  }	
  
     @Override

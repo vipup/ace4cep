@@ -1,10 +1,10 @@
-package com.mycompany;
+package eu.blky.cep.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public class MyKafkaEvent {
+public class KafkaDefaultEvent {
 	
-	public final static String TOPIC_NAME = "MyKafkaEvent";
+	public final static String TOPIC_NAME = KafkaDefaultEvent.class.getName();
  
 	private String topic;
 
@@ -16,7 +16,7 @@ public class MyKafkaEvent {
 
 	private String value;
   
-	public MyKafkaEvent(ConsumerRecord<String, String> record) {
+	public KafkaDefaultEvent(ConsumerRecord<String, String> record) {
 		if (record == null) return;
 		this.topic = record.topic();
 		this.partition = record.partition();

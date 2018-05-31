@@ -40,15 +40,17 @@ import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.client.dataflow.EPDataFlowInstance;
  
 import com.mycompany.MyClass;
-import com.mycompany.MyKafkaDefaultConsumer;
- 
 import com.mycompany.Sensor;
+
+import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
+import eu.blky.cep.listeners.Defaulistener;
+import eu.blky.cep.listeners.ThroughputQuotedListener;
+import eu.blky.cep.utils.ws2http.HttpSessionConfigurator;
  
  
   
  
 @ServerEndpoint(value = "/websocket/chat" , configurator = HttpSessionConfigurator.class)
-@Component
 public class ChatAnnotation {
 	
 
@@ -71,8 +73,8 @@ public class ChatAnnotation {
 	private List<Messenger> activeMessengers =  new ArrayList<Messenger>();
 
     @Autowired
-//    @Qualifier("kafkaDefaultConsumer")
-    private MyKafkaDefaultConsumer kafkaHook;
+//  TODO - Not works with SpringMVC :(   @Qualifier("kafkaDefaultConsumer")
+    private CepKafkaDefaultConsumer kafkaHook;
 
     public ChatAnnotation() {
         nickname = GUEST_PREFIX + connectionIds.getAndIncrement();
@@ -86,7 +88,7 @@ public class ChatAnnotation {
         try {
         	HttpSession httpsessionTmp =  (HttpSession) this.getSession().getUserProperties().get("http_session");
         	//	httpsessionTmp.getAttribute("kafkaWriter");
-        	kafkaHook = (MyKafkaDefaultConsumer) httpsessionTmp.getAttribute("kafkaReader");
+        	kafkaHook = (CepKafkaDefaultConsumer) httpsessionTmp.getAttribute("kafkaReader");
         	
         }catch(Exception e){
         	e.printStackTrace();
@@ -170,7 +172,7 @@ public class ChatAnnotation {
 		EPServiceProvider cep = keeper.getCep();
 		EPAdministrator epAdministrator = cep.getEPAdministrator(); 
         ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();		
-		configurationTmp.addEventType("MyKafkaEvent", com.mycompany.MyKafkaEvent.class);
+		configurationTmp.addEventType("MyKafkaEvent", eu.blky.cep.kafka.KafkaDefaultEvent.class);
 		//MyKafkaEvent kafkaHook = (MyKafkaEvent) props.get("kafkaHook");
 		
 

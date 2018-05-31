@@ -1,4 +1,4 @@
-package com.mycompany;
+package eu.blky.cep.kafka;
  
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 import com.espertech.esper.client.EPRuntime; 
 
 @Component
-public class MyKafkaDefaultConsumer {
+public class CepKafkaDefaultConsumer {
 	public static String KAFKA_HOOK = "KAFKA_HOOK";
 	static final ThreadGroup t1 = new ThreadGroup("always running MyKafkaThread#"+System.currentTimeMillis() );
  
-	public MyKafkaDefaultConsumer( ) {
+	public CepKafkaDefaultConsumer( ) {
 		initConsumer();
 	}
 
@@ -63,7 +63,7 @@ public class MyKafkaDefaultConsumer {
 	                Consumer<String, String> consumer = createConsumer();
 
 	                // subscribe to the test topic
-	                consumer.subscribe(Collections.singletonList(MyKafkaEvent.TOPIC_NAME));
+	                consumer.subscribe(Collections.singletonList(KafkaDefaultEvent.TOPIC_NAME));
 	                try {
 	                    // loop forever (hmmmmm)
 	                    while (active) {
@@ -74,7 +74,7 @@ public class MyKafkaDefaultConsumer {
 	                                    "Message rEcEivEd ==> topic = %s, partition = %s, offset = %d, key = %s, value = %s\n",
 	                                    record.topic(), record.partition(), record.offset(), record.key(), record.value());
 
-	                            MyKafkaEvent eTmp = new MyKafkaEvent(record);
+	                            KafkaDefaultEvent eTmp = new KafkaDefaultEvent(record);
 	                            
 								List<EPRuntime> listeners2 = getListeners();
 								for(EPRuntime rt : listeners2) {
