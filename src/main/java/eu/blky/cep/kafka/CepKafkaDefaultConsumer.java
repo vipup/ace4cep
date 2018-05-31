@@ -10,6 +10,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -25,17 +27,21 @@ import eu.blky.cep.listeners.Defaulistener;
 @Component
 public class CepKafkaDefaultConsumer { 
 	static final ThreadGroup t1 = new ThreadGroup("always running MyKafkaReaderThread#"+System.currentTimeMillis() );
- 
+	static int counter = 0;
 	public CepKafkaDefaultConsumer( ) {
 		
 		initConsumer();
 	}
-
+	@PreDestroy
+	private void cleanUp() {
+		this.active = false;
+	}
+	
 	ThreadFactory highPrioFactory = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {				
 				Runnable arg1 = r;
-				String arg2 = "highPrioFactory";
+				String arg2 = "highPrioFactory#"+(counter++);
 				Thread retval = new Thread(t1, arg1, arg2);
 				retval.setDaemon(false);
 				retval.setPriority(Thread.MAX_PRIORITY-1);
@@ -85,6 +91,7 @@ public class CepKafkaDefaultConsumer {
 								for(EPRuntime rt : listeners2) {
 									try {
 										rt.sendEvent(eTmp);
+										LOG.trace("distributed to:{} <{}", rt, record.value() );
 									}catch(Exception e) {
 										LOG.error("for(EPRuntime rt : listeners2) {;", e );
 									}
@@ -126,6 +133,8 @@ public class CepKafkaDefaultConsumer {
 	public void stopMonitoring( ) {
 		LOG.debug("stopMonitoring!");
 		active = false;
+		boolean mayInterruptIfRunning = true;
+		shutdownHook.cancel(mayInterruptIfRunning );
 	}
 
 	public void removeListener(EPRuntime cepRT) {

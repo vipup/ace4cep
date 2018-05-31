@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.OnClose;
 
@@ -20,8 +21,8 @@ import com.espertech.esper.client.EPRuntime;
 @Scope("singleton")
 public class KafkaController {
 	
-	@OnClose
-	private void stopAll() {
+	@PreDestroy
+	private void cleanUp() {
 		kafkaReader.stopMonitoring();
 	}
 

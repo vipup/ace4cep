@@ -3,6 +3,8 @@ package eu.blky.cep.kafka;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,7 +17,8 @@ import org.springframework.stereotype.Component;
 public class CepKafkaDefaultProducer {
 	/** Logger */
 	private static Logger LOG = LoggerFactory.getLogger(CepKafkaDefaultProducer.class);
- 
+
+	
 	Producer<String, String> producer = createProducer();
 	
 	public void send(String text) throws InterruptedException, ExecutionException {

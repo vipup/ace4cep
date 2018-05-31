@@ -17,11 +17,11 @@
 			<maxFileSize>2000MB</maxFileSize>
 		</rollingPolicy>
 	</appender>
-	<logger name="org.apache.kafka" level="INFO" />
-	<logger name="org.springframework.beans.factory.support" level="ERROR" /><!-- 
-		Reduce noise in case user runs with TRACE logging -->
-	<logger name="psiprobe.tools.ApplicationUtils" level="INFO" />
+
 	<root level="INFO"> 
 		<appender-ref ref="ace4cep" />
 	</root>
+	<logger name="org.apache.kafka" level="INFO" />
+	<logger name="org.springframework.beans.factory.support" level="ERROR" /> 
+	<logger name="eu.blky.cep.kafka" level="TRACE" />	
 </configuration>
