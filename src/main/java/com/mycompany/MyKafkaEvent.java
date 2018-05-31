@@ -3,6 +3,8 @@ package com.mycompany;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class MyKafkaEvent {
+	
+	public final static String TOPIC_NAME = "MyKafkaEvent";
  
 	private String topic;
 

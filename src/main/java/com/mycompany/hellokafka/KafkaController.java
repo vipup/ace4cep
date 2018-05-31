@@ -2,6 +2,8 @@ package com.mycompany.hellokafka;
  
 import java.util.concurrent.ExecutionException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -13,7 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.mycompany.MyKafkaDefaultConsumer;
 import com.mycompany.MyKafkaDefaultProducer;
  
-@Controller
+@Controller 
+@Scope("singleton")
 public class KafkaController {
 
     @Autowired
@@ -21,17 +24,13 @@ public class KafkaController {
 
     @Autowired
     private MyKafkaDefaultProducer kafkaWriter;    
-  
-    /**
-    * Request mapping for user
-    */
-    @RequestMapping(value = "users", method = RequestMethod.GET)
-    public ModelAndView getUsersView() {
-        ModelAndView mv= new ModelAndView("usersView");
-      mv.addObject("kafkaWriter", kafkaWriter );
-      mv.addObject("kafkaReader", kafkaReader );
-        return mv;
-    }
+
+    @RequestMapping(value = "/init", method = RequestMethod.GET)
+    public @ResponseBody String testMestod(HttpServletRequest request){
+       request.getSession().setAttribute("kafkaWriter",kafkaWriter);
+       request.getSession().setAttribute("kafkaReader",kafkaReader);
+       return "inited";
+    }    
      
     /**
     * Rest web service

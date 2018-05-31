@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -46,7 +47,7 @@ import com.mycompany.Sensor;
  
   
  
-@ServerEndpoint(value = "/websocket/chat")
+@ServerEndpoint(value = "/websocket/chat" , configurator = HttpSessionConfigurator.class)
 @Component
 public class ChatAnnotation {
 	
@@ -81,6 +82,18 @@ public class ChatAnnotation {
     @OnOpen
     public void start(Session session) {
         this.setSession(session);
+        // TODO undocumented
+        try {
+        	HttpSession httpsessionTmp =  (HttpSession) this.getSession().getUserProperties().get("http_session");
+        	//	httpsessionTmp.getAttribute("kafkaWriter");
+        	kafkaHook = (MyKafkaDefaultConsumer) httpsessionTmp.getAttribute("kafkaReader");
+        	
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+        
+        // TODO undocumented 
+        
         nickname = session.getUserPrincipal().getName()+"#"+session.getId();
         initSession();
         connections.add(this);
@@ -144,7 +157,7 @@ public class ChatAnnotation {
 		//setupKafkaInput(cepConfig);
 		//setupKafkaOutput(cepConfig);
 		
-        //responce( setupMyKafkaEvent(epRuntime ) );
+        responce( setupMyKafkaEvent(epRuntime ) );
 		
 	    return keeper.getCepRT();
 	}
@@ -162,7 +175,7 @@ public class ChatAnnotation {
 		
 
 		kafkaHook.addListener(epRuntime);
-		return "hi from MyKafkaEvent";
+		return "hi from MyKafkaEvent["+kafkaHook+"]";
 
 	}
 

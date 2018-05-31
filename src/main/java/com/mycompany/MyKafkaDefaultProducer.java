@@ -8,15 +8,14 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.stereotype.Component;
-
-import com.mycompany.hellokafka.KafkaConsumerExample;
+ 
  
 @Component
 public class MyKafkaDefaultProducer {
 	public void send(String text) throws InterruptedException, ExecutionException {
 		Producer<String, String> producer = createProducer();
 		ProducerRecord<String, String> recordToSend = 
-        		new ProducerRecord<String, String>(KafkaConsumerExample.TOPIC_NAME, "message",
+        		new ProducerRecord<String, String>(MyKafkaEvent.TOPIC_NAME, "message",
         				text );
   
             // synchronous send.... get() waits for the computation to

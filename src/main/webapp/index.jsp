@@ -3,6 +3,7 @@
 <head>
 <title>ACE in Action</title>
 <link rel="stylesheet" type="text/css" href="css/ace.css" />
+<link rel="stylesheet" type="text/css" href="init" />
 <script type="text/javascript" src="ace-builds/src-noconflict/ace.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/wscommunicator.js"></script>
 </head>
