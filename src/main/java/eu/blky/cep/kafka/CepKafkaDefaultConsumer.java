@@ -81,7 +81,7 @@ public class CepKafkaDefaultConsumer {
 	                        ConsumerRecords<String, String> records = consumer.poll(100);
 	                        // print the messages received
 	                        for (ConsumerRecord<String, String> record : records) {
-	                        	LOG.error(
+	                        	LOG.debug(
 	                                    "Message rEcEivEd ==> topic = {}, partition = {}, offset = {}, key = {}, value = {}\n",
 	                                    record.topic(), record.partition(), record.offset(), record.key(), record.value());
 
@@ -91,7 +91,7 @@ public class CepKafkaDefaultConsumer {
 								for(EPRuntime rt : listeners2) {
 									try {
 										rt.sendEvent(eTmp);
-										LOG.trace("distributed to:{} <{}", rt, record.value() );
+										LOG.debug("distributed to:{} <{}", rt, record.value() );
 									}catch(Exception e) {
 										LOG.error("for(EPRuntime rt : listeners2) {;", e );
 									}
