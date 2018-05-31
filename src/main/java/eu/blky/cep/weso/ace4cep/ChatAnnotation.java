@@ -86,32 +86,22 @@ public class ChatAnnotation {
         this.setSession(session);
         // TODO undocumented
         try {
-        	HttpSession httpsessionTmp =  (HttpSession) this.getSession().getUserProperties().get("http_session");
+        	HttpSession httpsessionTmp =  (HttpSession) this.getSession().getUserProperties().get(eu.blky.cep.utils.ws2http.HttpSessionConfigurator.HTTP_SESSION);
         	//	httpsessionTmp.getAttribute("kafkaWriter");
         	kafkaHook = (CepKafkaDefaultConsumer) httpsessionTmp.getAttribute("kafkaReader");
         	
         }catch(Exception e){
-        	e.printStackTrace();
+        	LOG.error("public void start(Session session) {", e );
         }
         
-        // TODO undocumented 
-        
+        // TODO undocumented  
         nickname = session.getUserPrincipal().getName()+"#"+session.getId();
         initSession();
         connections.add(this);
         String message = String.format("* %s %s", nickname, "has joined.");
         broadcast(message);
     }
-
-//    public void setSessionProp(String name, Object o) {
-//    	Map<String, Object> props = this.getSession().getUserProperties();
-//    	props .put(name,o);		
-//    }
-//    public Object getSessionProp(String name) {
-//    	Map<String, Object> props = this.getSession().getUserProperties();
-//    	Object retval = props .get(name);
-//		return retval ;
-//    }
+ 
     
     private void destroySession() {
     	hookToKill.stopMonitoring();
@@ -203,7 +193,7 @@ public class ChatAnnotation {
 			configurationTmp.addPlugInSingleRowFunction( "doSearch", className, "doSearch");
 			configurationTmp.addPlugInSingleRowFunction( "percent", className, "percent");
 		}catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("private String setupMyClass(ConfigurationOperations configurationTmp) {", e );
 		}
 		return  "hi from "+MyClass.class.getName();
 	}
@@ -337,8 +327,7 @@ public class ChatAnnotation {
 				try {
 					getSession().getBasicRemote().sendText("."+statementName+"."+string);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error("public void sendMessage(String string) {", e );
 				} 
 			}
 
@@ -421,14 +410,14 @@ public class ChatAnnotation {
 		CepKeeper cepKeeper = getKeeper(); 
 		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames(); 
 		HashMap<String, CepPair> listeners = listAllListeners(StatementNames);
-		responce(message+DELIM+map2string(listeners )); 
+		responce("$"+DELIM+map2string(listeners )); 
 	}
 	
 	private void exec_se(String message) {
 		CepKeeper cepKeeper = getKeeper(); 
 		Configuration cfg = cepKeeper .getCepConfig();
 		Map<String, String> etn = cfg .getEventTypeNames();		
-		responce(message+DELIM+map2string(etn)); 
+		responce("$"+DELIM+map2string(etn)); 
 	}
  
 
@@ -436,29 +425,22 @@ public class ChatAnnotation {
 		try {
 			getSession().getBasicRemote().sendText(filteredMessage);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("rivate void responce(String filteredMessage) {", e );
 		}
 		
 	}
 
 
 	private void exec_who(String msg) {
-		String listOfCepStatements = "ANONYMOUS";
-		try {
-			for (ChatAnnotation con : connections) {
-				listOfCepStatements += ",";
-				listOfCepStatements += con.nickname;
-			}
-			getSession().getBasicRemote().sendText("connected: " + listOfCepStatements);
-		} catch (IOException e) {
-			// Ignore
+		String listOfCepStatements = "";
+		for (ChatAnnotation con : connections) {
+			listOfCepStatements += ",";
+			listOfCepStatements += con.nickname;
 		}
+		responce("$"+DELIM + listOfCepStatements);
+
 	};
- 
- 
-
-
+  
 
     private Object HTMLFilter_filter(String message) {
         if (message == null)
@@ -521,8 +503,7 @@ public class ChatAnnotation {
     }
 
 
-	/**
-	 * @return 
+	/** 
 	 * @return the session
 	 */
 	public synchronized Session getSession() {

@@ -32,6 +32,20 @@
 	margin: 4px 2px;
 }
 
+
+.button2 {
+	background-color: #CA5050;
+	border: none;
+	color: black;
+	padding: 2px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 9px;
+	margin: 1px 1px;
+	border-radius: 18px;
+}
+
 .button3 {
 	border-radius: 8px;
 }

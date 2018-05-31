@@ -31,7 +31,7 @@ public class ThroughputQuotedListener implements UpdateListener {
 	public ThroughputQuotedListener(EPStatement stPar) {
 		this.statement = stPar;
 		this.statement .addListener(this);
-		System.out.println("TODO this.statement .addListener(this);this.statement .addListener(this);this.statement .addListener(this);this.statement .addListener(this);");
+		LOG.error("TODO this.statement .addListener(this);this.statement .addListener(this);this.statement .addListener(this);this.statement .addListener(this);");
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class ThroughputQuotedListener implements UpdateListener {
 	}
 
 	final private void stop() {
-		System.out.println(""+(System.currentTimeMillis() -lastUpdate)+ "STOOOOOOOOOOOOOOOOOP !! reached:: ["+callCount.get()+"]/sec! DANGEROUS STATMENT!::::"+statement.getName()+":::"+statement.getText());
+		LOG.error(""+(System.currentTimeMillis() -lastUpdate)+ "STOOOOOOOOOOOOOOOOOP !! reached:: ["+callCount.get()+"]/sec! DANGEROUS STATMENT!::::"+statement.getName()+":::"+statement.getText());
 		statement.stop();
 	}
 

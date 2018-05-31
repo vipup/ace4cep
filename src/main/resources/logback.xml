@@ -1,0 +1,27 @@
+<configuration scan="true" debug="false">
+	<appender name="ace4cep"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${catalina.base}/logs/ace4cep.log</File>
+		<append>true</append>
+		<encoder>
+			<charset>utf-8</charset>
+			<pattern>%d{HH:mm:ss.SSS} %-5level {%thread} [%logger{40}] %msg%n
+			</pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${catalina.base}/logs/archive/ace4cep-%d{yyyyMMdd}-%i.log.zip
+			</fileNamePattern>
+			<maxHistory>10</maxHistory>
+			<cleanHistoryOnStart>false</cleanHistoryOnStart>
+			<maxFileSize>2000MB</maxFileSize>
+		</rollingPolicy>
+	</appender>
+	<logger name="org.apache.kafka" level="INFO" />
+	<logger name="org.springframework.beans.factory.support" level="ERROR" /><!-- 
+		Reduce noise in case user runs with TRACE logging -->
+	<logger name="psiprobe.tools.ApplicationUtils" level="INFO" />
+	<root level="INFO"> 
+		<appender-ref ref="ace4cep" />
+	</root>
+</configuration>

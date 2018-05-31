@@ -1,25 +1,31 @@
 package com.mycompany.experiments.akka.failure.handling;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import akka.actor.AbstractActor;
+import eu.blky.cep.listeners.Defaulistener;
 
 class SupervisedActor extends AbstractActor {
 	private boolean failed;
+	/** Logger */
+	private static Logger LOG = LoggerFactory.getLogger(SupervisedActor.class);
 
 	@Override
 	public void preStart() {
-		System.out.println("supervised actor started");
+		LOG.info("supervised actor started");
 	}
 
 	@Override
 	public void postStop() {
-		System.out.println("supervised actor stopped");
+		LOG.info("supervised actor stopped");
 	}
 
 	@Override
 	public Receive createReceive() {
 		return receiveBuilder()
 			.matchEquals("fail", f -> {
-				System.out.println("supervised actor fails now");
+				LOG.info("supervised actor fails now");
 				this.setFailed(true); 
 				throw new Exception("I failed!");		
 			})

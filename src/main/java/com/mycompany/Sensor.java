@@ -7,7 +7,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.espertech.esper.client.EPRuntime;
+
+import eu.blky.cep.listeners.Defaulistener;
 
 public class Sensor {
 	ThreadFactory highPrioFactory = new ThreadFactory() {
@@ -33,7 +39,9 @@ public class Sensor {
 
 	private EPRuntime rt;
 	Random random = new Random();
-	String[] sensors = "s1,s2,s3,s4,s5,s6".split(","); 
+	String[] sensors = "s1,s2,s3,s4,s5,s6".split(",");
+	/** Logger */
+	private static Logger LOG = LoggerFactory.getLogger(Sensor.class); 
 
 	public void startMonitoring(EPRuntime epRuntime) {
 		this.rt = epRuntime;
@@ -56,7 +64,7 @@ public class Sensor {
 	        		Thread.sleep(1000*nextInt);
 	        		rt.sendEvent(theEvent , SENSOR_EVENT);
 	        	}catch(Throwable e) {
-	        		e.printStackTrace();
+	        		LOG.error("rt.sendEvent(theEvent , SENSOR_EVENT);", e );
 	        		
 	        	}
 	        }

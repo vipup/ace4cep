@@ -7,13 +7,19 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.stereotype.Component;
- 
- 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component; 
+
 @Component
 public class CepKafkaDefaultProducer {
+	/** Logger */
+	private static Logger LOG = LoggerFactory.getLogger(CepKafkaDefaultProducer.class);
+ 
+	Producer<String, String> producer = createProducer();
+	
 	public void send(String text) throws InterruptedException, ExecutionException {
-		Producer<String, String> producer = createProducer();
+		
 		ProducerRecord<String, String> recordToSend = 
         		new ProducerRecord<String, String>(KafkaDefaultEvent.TOPIC_NAME, "message",
         				text );
@@ -21,7 +27,7 @@ public class CepKafkaDefaultProducer {
             // synchronous send.... get() waits for the computation to
             // finish
             RecordMetadata rmd = producer.send(recordToSend).get();
-            System.out.printf("Message Sent ==>> topic = %s, partition = %s, offset = %d\n", rmd.topic(),
+            LOG.debug("Message Sent ==>> topic = {}, partition = {}, offset = {}\n", rmd.topic(),
                     rmd.partition(), rmd.offset());
  	
 	}

@@ -14,16 +14,20 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.espertech.esper.client.EPRuntime; 
+import com.espertech.esper.client.EPRuntime;
+
+import eu.blky.cep.listeners.Defaulistener; 
 
 @Component
-public class CepKafkaDefaultConsumer {
-	public static String KAFKA_HOOK = "KAFKA_HOOK";
-	static final ThreadGroup t1 = new ThreadGroup("always running MyKafkaThread#"+System.currentTimeMillis() );
+public class CepKafkaDefaultConsumer { 
+	static final ThreadGroup t1 = new ThreadGroup("always running MyKafkaReaderThread#"+System.currentTimeMillis() );
  
 	public CepKafkaDefaultConsumer( ) {
+		
 		initConsumer();
 	}
 
@@ -47,6 +51,7 @@ public class CepKafkaDefaultConsumer {
 	private static final ArrayList<EPRuntime> listeners = new ArrayList<EPRuntime>();
 	
 	public void addListener(EPRuntime epRuntime ) {
+		LOG.debug("add listener: {}",epRuntime);
 		this.getListeners() .add(epRuntime);
 	}
 	
@@ -70,8 +75,8 @@ public class CepKafkaDefaultConsumer {
 	                        ConsumerRecords<String, String> records = consumer.poll(100);
 	                        // print the messages received
 	                        for (ConsumerRecord<String, String> record : records) {
-	                            System.out.printf(
-	                                    "Message rEcEivEd ==> topic = %s, partition = %s, offset = %d, key = %s, value = %s\n",
+	                        	LOG.error(
+	                                    "Message rEcEivEd ==> topic = {}, partition = {}, offset = {}, key = {}, value = {}\n",
 	                                    record.topic(), record.partition(), record.offset(), record.key(), record.value());
 
 	                            KafkaDefaultEvent eTmp = new KafkaDefaultEvent(record);
@@ -81,7 +86,7 @@ public class CepKafkaDefaultConsumer {
 									try {
 										rt.sendEvent(eTmp);
 									}catch(Exception e) {
-										e.printStackTrace();
+										LOG.error("for(EPRuntime rt : listeners2) {;", e );
 									}
 	                            }
 	                        }
@@ -91,7 +96,7 @@ public class CepKafkaDefaultConsumer {
 	                    consumer.close();
 	                } 
 	        	}catch(Throwable e) {
-	        		e.printStackTrace();
+	        		LOG.error("rt.sendEvent(theEvent , SENSOR_EVENT);", e );
 	        		
 	        	}
 	        }
@@ -116,12 +121,16 @@ public class CepKafkaDefaultConsumer {
 		
 	}
 	ScheduledFuture<?> shutdownHook ;
+	/** Logger */
+	private static Logger LOG = LoggerFactory.getLogger(Defaulistener.class);
 	public void stopMonitoring( ) {
+		LOG.debug("stopMonitoring!");
 		active = false;
 	}
 
 	public void removeListener(EPRuntime cepRT) {
-		//TODO - listeners.remove(cepRT);
+		LOG.debug("delete listener: {}",cepRT);
+		listeners.remove(cepRT);
 	}
 
 	/**

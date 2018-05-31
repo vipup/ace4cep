@@ -9,7 +9,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.espertech.esper.client.EPRuntime;
+
+import eu.blky.cep.listeners.Defaulistener;
 
 public class MyEvent implements Serializable{
 	static final ThreadGroup t1 = new ThreadGroup("always running MyEventThread" );
@@ -78,13 +84,11 @@ public class MyEvent implements Serializable{
 	        @Override
 	        public void run() {
 	        	checkCount++;  
-	        	// com.espertech.esper.client.EPException: Event type named 'SensorEvent' has not been defined or is not a Map event type, the name 'SensorEvent' has not been defined as an event type
-	        	//theEvent.put("checkCount", checkCount );
 	        	try {
 	        		MyEvent eTmp = new MyEvent(checkCount);
 	        		rt.sendEvent(eTmp);
 	        	}catch(Throwable e) {
-	        		e.printStackTrace();
+	        		LOG.error("public void startMonitoring(EPRuntime epRuntime) {", e );
 	        		
 	        	}
 	        }
@@ -97,6 +101,9 @@ public class MyEvent implements Serializable{
 		
 	}
 	ScheduledFuture<?> shutdownHook ;
+
+	/** Logger */
+	private static Logger LOG = LoggerFactory.getLogger(Defaulistener.class);
 	public void stopMonitoring( ) {
 		shutdownHook.cancel(true);
 	}	
