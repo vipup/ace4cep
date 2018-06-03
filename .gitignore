@@ -3,3 +3,4 @@
 *.iml
 /target/
 /bin/
+/catalina.base_IS_UNDEFINED/

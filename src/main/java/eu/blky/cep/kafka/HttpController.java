@@ -37,7 +37,7 @@ public class HttpController {
        return "inited";
     }   	
    
-    @RequestMapping(value = "/push/{id}", method = RequestMethod.GET) //, produces = MediaType.APPLICATION_JSON_VALUE
+    @RequestMapping(value = "/push/{id}", method = RequestMethod.GET)  
     public @ResponseBody String push2cep(@PathVariable("id") long id) {
     	LOG.info("public String push2cep(@PathVariable(\"id\") long id) {"+id);
     	try {
@@ -47,7 +47,7 @@ public class HttpController {
     	}catch(Exception e) {
     		LOG.error("  public String push2cep(@PathVariable(\"id\") long id) {}", e);
     	}
-        return "...";
+        return ""+id;
     }
      
 	@PreDestroy

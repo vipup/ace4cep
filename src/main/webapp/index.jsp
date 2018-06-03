@@ -56,7 +56,7 @@ insert into PI select * from IP1 where (i < maxI) ;
 			<button class="button button3" onmousedown="example_1()"
 				onmouseup="example_1()" ontouchstart="example_1()">Example1</button>
 			<button class="button button3" onmousedown="example_2()"
-				onmouseup="example_1()" ontouchstart="example_2()">httpEX</button>				
+				onmouseup="example_2()" ontouchstart="example_2()">httpEX</button>				
 		</div>
 		<div id="console-container">
 			<div id="ViewConsole" />
