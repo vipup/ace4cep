@@ -21,6 +21,10 @@ import com.espertech.esper.client.EPRuntime;
 @Scope("singleton")
 public class KafkaController {
 	
+	private static final String KAFKA_WRITER = "kafkaWriter";
+
+	public static final String KAFKA_READER = "kafkaReader";
+
 	@PreDestroy
 	private void cleanUp() {
 		kafkaReader.stopMonitoring();
@@ -37,8 +41,8 @@ public class KafkaController {
 
     @RequestMapping(value = "/init", method = RequestMethod.GET)
     public @ResponseBody String testMestod(HttpServletRequest request){
-       request.getSession().setAttribute("kafkaWriter",kafkaWriter);
-       request.getSession().setAttribute("kafkaReader",kafkaReader);
+       request.getSession().setAttribute(KAFKA_WRITER,kafkaWriter);
+       request.getSession().setAttribute(KAFKA_READER,kafkaReader);
        return "inited";
     }    
      

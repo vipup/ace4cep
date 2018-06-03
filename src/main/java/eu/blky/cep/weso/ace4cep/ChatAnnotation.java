@@ -43,6 +43,8 @@ import com.mycompany.MyClass;
 import com.mycompany.Sensor;
 
 import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
+import eu.blky.cep.kafka.HttpController;
+import eu.blky.cep.kafka.KafkaController;
 import eu.blky.cep.listeners.Defaulistener;
 import eu.blky.cep.listeners.ThroughputQuotedListener;
 import eu.blky.cep.utils.ws2http.HttpSessionConfigurator;
@@ -60,13 +62,13 @@ public class ChatAnnotation {
     private static final AtomicInteger connectionIds = new AtomicInteger(0);
     private static final Set<ChatAnnotation> connections =
             new CopyOnWriteArraySet<ChatAnnotation>();
-
-	private static final String CEP_KEEPER = "CEP_KEEPER";
+ 
 
 	private static final String DELIM = "^";
 
     private String nickname;
     private Session session;
+    private HttpSession httpsessionTmp;
 
 	private static int engineCounter;
 
@@ -83,12 +85,11 @@ public class ChatAnnotation {
 
     @OnOpen
     public void start(Session session) {
-        this.setSession(session);
-        // TODO undocumented
+        this.setSession(session); 
         try {
-        	HttpSession httpsessionTmp =  (HttpSession) this.getSession().getUserProperties().get(eu.blky.cep.utils.ws2http.HttpSessionConfigurator.HTTP_SESSION);
+        	httpsessionTmp =  (HttpSession) this.getSession().getUserProperties().get(eu.blky.cep.utils.ws2http.HttpSessionConfigurator.HTTP_SESSION);
         	//	httpsessionTmp.getAttribute("kafkaWriter");
-        	kafkaHook = (CepKafkaDefaultConsumer) httpsessionTmp.getAttribute("kafkaReader");
+        	kafkaHook = (CepKafkaDefaultConsumer) httpsessionTmp.getAttribute(KafkaController.KAFKA_READER);
         	
         }catch(Exception e){
         	LOG.error("public void start(Session session) {", e );
@@ -108,16 +109,9 @@ public class ChatAnnotation {
     	mySensor.stop();
     	// stop /destroy / passivate / deactivate session-vars
     	kafkaHook.removeListener(getKeeper().getCepRT());
-    	
-    	//  TODO refactor to Destroyable
     	getKeeper().destroy();
-    	Map<String, Object> props = this.getSession().getUserProperties();
-    	props.remove(CEP_KEEPER);
     }
     private void initSession() {
-    	Map<String, Object> props = this.getSession().getUserProperties();
-		CepKeeper newKeeper = new CepKeeper();
-		props.put(CEP_KEEPER, newKeeper ); 
 		initCEP();
 	}
 	
@@ -148,8 +142,12 @@ public class ChatAnnotation {
 
 		//setupKafkaInput(cepConfig);
 		//setupKafkaOutput(cepConfig);
-		
         responce( setupMyKafkaEvent(epRuntime ) );
+        
+        // setup HttpController
+		configurationTmp.addEventType("myHttpEvent", eu.blky.cep.kafka.HttpPushObject.class);
+		responce( "hi from [myHttpEvent]! Call http://localhost:8080/ace4cep/push/{id} for sending data into CEP."  );
+        
 		
 	    return keeper.getCepRT();
 	}
@@ -229,7 +227,7 @@ public class ChatAnnotation {
 	
 	
     private CepKeeper getKeeper() { 
-		return (CepKeeper) getSession().getUserProperties().get(CEP_KEEPER);
+		return  (CepKeeper) httpsessionTmp.getAttribute(HttpController.CEP_KEEPER);
 	}
 
 

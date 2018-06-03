@@ -3,6 +3,9 @@ package eu.blky.cep.weso.ace4cep;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Service;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPAdministrator;
 import com.espertech.esper.client.EPRuntime;
@@ -10,7 +13,8 @@ import com.espertech.esper.client.EPServiceProvider;
 
  
 
-//@Service
+@Component
+@Scope("session") 
 public class CepKeeper {
 
     private EPServiceProvider cep;

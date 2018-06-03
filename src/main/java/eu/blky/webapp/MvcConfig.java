@@ -14,11 +14,18 @@ import eu.blky.cep.kafka.CepKafkaDefaultProducer;
 @ComponentScan(basePackages = { "eu.blky.cep.weso.ace4cep",  "eu.blky.cep.kafka" })
 public class MvcConfig extends WebMvcConfigurerAdapter {
 	
+//	  @Bean(name = "cepKeeper")
+//	  @Primary
+//	  public CepKeeper getCepKeeper() {
+//	      return new CepKafkaDefaultConsumer();
+//	  }	
+	
+	  // both kafka-beans are common for Application
 	  @Bean(name = "kafkaDefaultConsumer")
 	  @Primary
 	  public CepKafkaDefaultConsumer getConsumer() {
 	      return new CepKafkaDefaultConsumer();
-	  }	
+	  }		  
 	  @Bean(name = "kafkaDefaultProducer")
 	  @Primary
 	  public CepKafkaDefaultProducer getProducer() {

@@ -4,6 +4,7 @@
 <title>ACE in Action</title>
 <link rel="stylesheet" type="text/css" href="css/ace.css" />
 <link rel="stylesheet" type="text/css" href="init" />
+<link rel="stylesheet" type="text/css" href="initcep" />
 <script type="text/javascript" src="ace-builds/src-noconflict/ace.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/wscommunicator.js"></script>
 </head>
@@ -54,12 +55,14 @@ insert into PI select * from IP1 where (i < maxI) ;
  
 			<button class="button button3" onmousedown="example_1()"
 				onmouseup="example_1()" ontouchstart="example_1()">Example1</button>
+			<button class="button button3" onmousedown="example_2()"
+				onmouseup="example_1()" ontouchstart="example_2()">httpEX</button>				
 		</div>
 		<div id="console-container">
 			<div id="ViewConsole" />
 		</div>
 	</div> 
-
+ 
 	<script>
 		var editor = ace.edit("editor");
 		editor.setTheme("ace/theme/tomorrow_night_blue");
@@ -67,6 +70,11 @@ insert into PI select * from IP1 where (i < maxI) ;
 		function example_1(){
 			var val = "-- here is the comment";
 			val += "\n select value, amount ,e , size from MyEvent"
+			editor.setValue(val);
+		}
+		function example_2(){
+			var val = "-- this example will read all input from http://localhost:8080/ace4cep/push/123";
+			val += "\n  select id from myHttpEvent;"
 			editor.setValue(val);
 		}
 	</script>

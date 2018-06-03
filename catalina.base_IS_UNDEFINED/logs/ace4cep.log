@@ -1,0 +1,12 @@
+22:19:55.368 INFO  {testSystem-akka.actor.default-dispatcher-4} [c.m.e.a.failure.handling.SupervisedActor] supervised actor started
+22:19:55.387 INFO  {testSystem-akka.actor.default-dispatcher-4} [c.m.e.a.failure.handling.SupervisedActor] supervised actor stopped
+22:25:36.811 INFO  {testSystem-akka.actor.default-dispatcher-2} [c.m.e.a.failure.handling.SupervisedActor] supervised actor started
+22:25:36.819 INFO  {testSystem-akka.actor.default-dispatcher-2} [c.m.e.a.failure.handling.SupervisedActor] supervised actor stopped
+22:29:59.040 INFO  {testSystem-akka.actor.default-dispatcher-2} [c.m.e.a.failure.handling.SupervisedActor] supervised actor started
+22:29:59.049 INFO  {testSystem-akka.actor.default-dispatcher-2} [c.m.e.a.failure.handling.SupervisedActor] supervised actor stopped
+22:38:57.421 INFO  {testSystem-akka.actor.default-dispatcher-3} [c.m.e.a.failure.handling.SupervisedActor] supervised actor started
+22:38:57.425 INFO  {testSystem-akka.actor.default-dispatcher-3} [c.m.e.a.failure.handling.SupervisedActor] supervised actor stopped
+22:40:00.747 INFO  {testSystem-akka.actor.default-dispatcher-5} [c.m.e.a.failure.handling.SupervisedActor] supervised actor started
+22:40:00.751 INFO  {testSystem-akka.actor.default-dispatcher-5} [c.m.e.a.failure.handling.SupervisedActor] supervised actor stopped
+22:45:42.948 INFO  {testSystem-akka.actor.default-dispatcher-4} [c.m.e.a.failure.handling.SupervisedActor] supervised actor started
+22:45:42.959 INFO  {testSystem-akka.actor.default-dispatcher-4} [c.m.e.a.failure.handling.SupervisedActor] supervised actor stopped

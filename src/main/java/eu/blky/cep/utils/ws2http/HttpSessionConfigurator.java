@@ -8,8 +8,7 @@ import javax.websocket.server.ServerEndpointConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.blky.cep.kafka.KafkaController;
+ 
 
 public class HttpSessionConfigurator extends ServerEndpointConfig.Configurator {
 
