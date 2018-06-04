@@ -1,4 +1,4 @@
-package eu.blky.cep.kafka;
+package eu.blky.cep.http;
  
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -36,7 +36,7 @@ public class HttpController {
        request.getSession().setAttribute(CEP_KEEPER,cepKeeper);       
        return "inited";
     }   	
-   
+    // SpringWEb v.4.x.x
     @RequestMapping(value = "/push/{id}", method = RequestMethod.GET)  
     public @ResponseBody String push2cep(@PathVariable("id") long id) {
     	LOG.info("public String push2cep(@PathVariable(\"id\") long id) {"+id);
@@ -49,6 +49,19 @@ public class HttpController {
     	}
         return ""+id;
     }
+    // SpringWEb v.4.x.x
+    @RequestMapping(value = "/push/{key}/value/{value}", method = RequestMethod.GET)  
+    public @ResponseBody String push2cep(@PathVariable("key") long key,@PathVariable("value") double value) {
+    	LOG.info("public String push2cep({},{})) ", key , value);
+    	try {
+            Object object = new HttpPushObject(key,value);
+    		cepKeeper.getCepRT().sendEvent(object);
+    		
+    	}catch(Exception e) {
+    		LOG.error("  public String push2cep(@PathVariable(\"id\") long id) {}", e);
+    	}
+        return ""+key+"="+value;
+    }    
      
 	@PreDestroy
 	private void cleanUp() {

@@ -11,7 +11,7 @@ import eu.blky.cep.kafka.CepKafkaDefaultProducer;
  
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = { "eu.blky.cep.weso.ace4cep",  "eu.blky.cep.kafka" })
+@ComponentScan(basePackages = { "eu.blky.cep.weso.ace4cep",  "eu.blky.cep.kafka" ,  "eu.blky.cep.http" })
 public class MvcConfig extends WebMvcConfigurerAdapter {
 	
 //	  @Bean(name = "cepKeeper")

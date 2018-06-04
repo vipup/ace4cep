@@ -1,11 +1,22 @@
-package eu.blky.cep.kafka;
+package eu.blky.cep.http;
 
 public class HttpPushObject {
 
 	private long id;
+	private double value;
 
 	public HttpPushObject(long id) {
 		this.setId(id);
+	}
+
+	public HttpPushObject(long id2, double value) {
+		this(id2);
+		this.setValue(value);
+	}
+
+	private void setValue(double value) {
+		this.value = value;
+		
 	}
 
 	/**
@@ -20,6 +31,10 @@ public class HttpPushObject {
 	 */
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public double getValue() {
+		return value;
 	}
 
 }

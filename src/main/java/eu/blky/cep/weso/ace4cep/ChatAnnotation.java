@@ -42,8 +42,9 @@ import com.espertech.esper.client.dataflow.EPDataFlowInstance;
 import com.mycompany.MyClass;
 import com.mycompany.Sensor;
 
+import eu.blky.cep.http.HttpController;
+import eu.blky.cep.http.RrdFetcher;
 import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
-import eu.blky.cep.kafka.HttpController;
 import eu.blky.cep.kafka.KafkaController;
 import eu.blky.cep.listeners.Defaulistener;
 import eu.blky.cep.listeners.ThroughputQuotedListener;
@@ -145,9 +146,11 @@ public class ChatAnnotation {
         responce( setupMyKafkaEvent(epRuntime ) );
         
         // setup HttpController
-		configurationTmp.addEventType("myHttpEvent", eu.blky.cep.kafka.HttpPushObject.class);
+		configurationTmp.addEventType("myHttpEvent", eu.blky.cep.http.HttpPushObject.class);
 		responce( "hi from [myHttpEvent]! Call http://localhost:8080/ace4cep/push/{id} for sending data into CEP."  );
         
+		// setupRrdFetcher
+		responce( setupRrdFetcher(configurationTmp) );
 		
 	    return keeper.getCepRT();
 	}
@@ -182,9 +185,20 @@ public class ChatAnnotation {
 	}
 
 
+	private String setupRrdFetcher(ConfigurationOperations configurationTmp) {
+		String className = RrdFetcher.class.getName();
+		try {			
+			configurationTmp.addPlugInSingleRowFunction( "fetch", className, "fetch");
+		}catch (Exception e) {
+			LOG.error("private String setupMyClass(ConfigurationOperations configurationTmp) {", e );
+		}
+		return  "hi from "+className;
+	}
+
 	private String setupMyClass(ConfigurationOperations configurationTmp) {
+		String className = MyClass.class.getName();
 		try {
-			String className = MyClass.class.getName();
+			
 			configurationTmp.addPlugInSingleRowFunction( "myFunction", className, "myFunction");
 			configurationTmp.addPlugInSingleRowFunction( "doCompute", className, "doCompute");
 			configurationTmp.addPlugInSingleRowFunction( "doCheck", className, "doCheck");
@@ -193,8 +207,8 @@ public class ChatAnnotation {
 		}catch (Exception e) {
 			LOG.error("private String setupMyClass(ConfigurationOperations configurationTmp) {", e );
 		}
-		return  "hi from "+MyClass.class.getName();
-	}
+		return  "hi from "+className;
+	}	
 
 
 	private String  setupMyEvent(EPRuntime epRuntime, ConfigurationOperations configurationTmp) {

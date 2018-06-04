@@ -74,7 +74,7 @@ insert into PI select * from IP1 where (i < maxI) ;
 		}
 		function example_2(){
 			var val = "-- this example will read all input from http://localhost:8080/ace4cep/push/123";
-			val += "\n  select id from myHttpEvent;"
+			val += "\n  select fetch (\"http://localhost:8080/rrdsaas/fetch.json\"  , \"X-1396676775.rrd\" ) from myHttpEvent;"
 			editor.setValue(val);
 		}
 	</script>
