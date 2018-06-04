@@ -17,7 +17,7 @@ public class RrdFetcher {
         rrdPathTmp = "http://localhost:8080/rrdsaas/fetch.json";
 		JsonNode rTmp = JsonReader.readJsonFromUrl(rrdPathTmp);
 		//
-		double retval = rTmp.get(1).get(2).getDoubleValue();
+		double retval = rTmp.get(0).get("data").get(0).get(1).getDoubleValue();
 		return retval ;
 	}
 	public static double fetch(String host, String url , String rrdname) {
