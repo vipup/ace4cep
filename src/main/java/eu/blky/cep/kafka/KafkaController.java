@@ -50,17 +50,17 @@ public class KafkaController {
     * Rest web service
     */
     @RequestMapping(value = "/send", method = RequestMethod.GET)
-    public @ResponseBody  boolean postToKafka(String message) {
+    public @ResponseBody  String postToKafka(String message) {
     	LOG.debug("/send:@ [{}] :: {} / {} ", message, kafkaReader, kafkaWriter);
     	try {
 			kafkaWriter.send(message);
-			return true;
+			return "'sendedToCommonKafkaEventQueue':'true'";
 		} catch (InterruptedException e) {
 			LOG.error("InterruptedException ",e);
 		} catch (ExecutionException e) {
 			LOG.error("InterruptedException ",e);
 		}
-        return false;
+        return "'sendedToCommonKafkaEventQueue':'false'";
     }
     
     

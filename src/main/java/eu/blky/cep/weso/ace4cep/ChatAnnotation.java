@@ -35,7 +35,7 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
- 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.client.dataflow.EPDataFlowInstance;
  
@@ -163,12 +163,9 @@ public class ChatAnnotation {
 		EPServiceProvider cep = keeper.getCep();
 		EPAdministrator epAdministrator = cep.getEPAdministrator(); 
         ConfigurationOperations configurationTmp = epAdministrator.getConfiguration();		
-		configurationTmp.addEventType("MyKafkaEvent", eu.blky.cep.kafka.KafkaDefaultEvent.class);
-		//MyKafkaEvent kafkaHook = (MyKafkaEvent) props.get("kafkaHook");
-		
-
+		configurationTmp.addEventType("CommonKafkaEvent", eu.blky.cep.kafka.KafkaDefaultEvent.class);
 		kafkaHook.addListener(epRuntime);
-		return "hi from MyKafkaEvent["+kafkaHook+"]";
+		return "hi from CommonKafkaEvent["+kafkaHook+"]";
 
 	}
 
@@ -250,8 +247,9 @@ public class ChatAnnotation {
     	if ("who".equals(message)) { // list of registered sessions
    		 	exec_who(message);
     	}else if ("help".equals(message)) { 
-    		responce("?"+DELIM+"available commands: help, who, stopall, startall, killall, hide{all}");
-    		responce("?"+DELIM+"for DataFlow :: sdf:-showDataFlow(s),  i:-instantiate, r:-run, s:-start, c:-cancel, j:-join ");
+    		responce("?"+DELIM+"available commands: help, who, stopall, startall, killall, hide{all}\n"
+    				+ "se|le - show|list events, ss - show statements \n"
+    				+ "for DataFlow :: sdf:-showDataFlow(s),  i:-instantiate, r:-run, s:-start, c:-cancel, j:-join ");
 //EPDataFlowInstance instance = epService.getEPRuntime().getDataFlowRuntime()    		
     	}else if ("sdf".equals(message)) { // show DataFlows
     		String[] dfTmp = this.getKeeper().getCepRT().getDataFlowRuntime().getDataFlows();
@@ -276,8 +274,8 @@ public class ChatAnnotation {
     		responce(message+DELIM+"Not implemented yet...");
     	}else if ("ss".equals(message)) { // show statements
     		exec_ss(message);
-    	}else if ("se".equals(message)) { // show eventtypes
-    		exec_se(message);
+    	}else if ("se".equals(message) || "le".equals(message)) { // show|list eventtypes
+    		exec_le(message);
     	}else if ("hideall".equals(message)) {  
     		exec_hide(message);
     	}else if ("hide".equals(message)) { 
@@ -418,6 +416,11 @@ public class ChatAnnotation {
 		exec_ss( message);
 	}
 	
+	/**
+	 * list statements, and send it back to asker
+	 * 
+	 * @param message
+	 */
 	private void exec_ss(String message) {
 		CepKeeper cepKeeper = getKeeper(); 
 		String[] StatementNames = cepKeeper.getCepAdm().getStatementNames(); 
@@ -425,13 +428,25 @@ public class ChatAnnotation {
 		responce("$"+DELIM+map2string(listeners )); 
 	}
 	
-	private void exec_se(String message) {
+	private void exec_le(String message) {
 		CepKeeper cepKeeper = getKeeper(); 
 		Configuration cfg = cepKeeper .getCepConfig();
-		Map<String, String> etn = cfg .getEventTypeNames();		
-		responce("$"+DELIM+map2string(etn)); 
+		EventType[] etn = cepKeeper.getCepAdm().getConfiguration().getEventTypes();		
+		responce("$"+DELIM+   listEventTypes(etn)); 
 	}
  
+
+	private String listEventTypes(EventType[] etn) {
+		String retval="";
+		for (EventType e:etn) {
+			retval += "\""+e.getName() +"\"";
+			retval += " : " ;
+			retval += e ;			
+			retval += "\n" ;			
+		}
+		return retval;
+	}
+
 
 	private void responce(String filteredMessage) {
 		try {

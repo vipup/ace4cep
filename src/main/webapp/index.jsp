@@ -35,7 +35,7 @@
 @Name("THE_Pi") create schema PI as ( acc double,  i double,  maxI double);
 @Name ("defive_VARs") create variable PI pi ;
 @Name ("last_assingment") on PI(i>=maxI-1) xxx set pi = xxx  ;
-@Name ("readKafka_and_forward_to_PI") insert into PI select 0.000000000000000001123 acc, 0 i,  new Integer(value)  maxI  from MyKafkaEvent ;
+@Name ("readKafka_and_forward_to_PI") insert into PI select 0.000000000000000001123 acc, 0 i,  new Integer(value)  maxI  from CommonKafkaEvent ;
 -- cycle connection : IP1 <-> PI
 insert into IP1
   select
@@ -45,7 +45,7 @@ insert into IP1
   from PI where i < maxI ;
 insert into PI select * from IP1 where (i < maxI) ;
 -- take messages from Kafka-topic
- insert into PI select 0.0 acc, 0 i,  new Integer(value)  maxI  from MyKafkaEvent ;
+ insert into PI select 0.0 acc, 0 i,  new Integer(value)  maxI  from CommonKafkaEvent ;
  -- now it is possible to post something into KafkaTopic with: http://localhost:8080/ace4cep/send?message=222
 
 </div>

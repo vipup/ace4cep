@@ -1,13 +1,12 @@
 package eu.blky.webapp;
 
 import org.springframework.context.annotation.*;
-//import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-//import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
 import eu.blky.cep.kafka.CepKafkaDefaultProducer;
+
  
 @EnableWebMvc
 @Configuration
