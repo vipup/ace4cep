@@ -13,13 +13,25 @@ public class RrdFetcher {
 	public static double fetch(String host, String url ) throws IOException {
 		String proto = "http://";
 		int port = 8080; 
-        String rrdPathTmp = proto+host+port+url;  
-        rrdPathTmp = "http://localhost:8080/rrdsaas/fetch.json";
+        String rrdPathTmp = proto+host+":"+port+url;  
+        //rrdPathTmp = "http://localhost:8080/rrdsaas/fetch.json";
 		JsonNode rTmp = JsonReader.readJsonFromUrl(rrdPathTmp);
 		//
 		double retval = rTmp.get(0).get("data").get(0).get(1).getDoubleValue();
 		return retval ;
 	}
+
+	public static Object fetchObject(String host, String url ) throws IOException {
+		String proto = "http://";
+		int port = 8080; 
+        String rrdPathTmp = proto+host+":"+port+url;  
+        //rrdPathTmp = "http://localhost:8080/rrdsaas/fetch.json";
+		JsonNode rTmp = JsonReader.readJsonFromUrl(rrdPathTmp);
+		//
+		Object retval = rTmp ;
+		return retval ;
+	}
+	
 	public static double fetch(String host, String url , String rrdname) {
 		return new Random().nextDouble();
 	}

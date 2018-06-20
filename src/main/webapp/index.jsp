@@ -57,6 +57,10 @@ insert into PI select * from IP1 where (i < maxI) ;
 				onmouseup="example_1()" ontouchstart="example_1()">Example1</button>
 			<button class="button button3" onmousedown="example_2()"
 				onmouseup="example_2()" ontouchstart="example_2()">httpEX</button>				
+			<button class="button button3" onmousedown="SUBMIT_3()"
+				onmouseup="SUBMIT_3()" ontouchstart="SUBMIT_3()">myHttpEvent</button>				
+
+
 		</div>
 		<div id="console-container">
 			<div id="ViewConsole" />
@@ -73,10 +77,28 @@ insert into PI select * from IP1 where (i < maxI) ;
 			editor.setValue(val);
 		}
 		function example_2(){
-			var val = "-- this example will read all input from http://localhost:8080/ace4cep/push/123";
-			val += "\n  select fetch (\"http://localhost:8080/rrdsaas/fetch.json\"  , \"X-1396676775.rrd\" ) from myHttpEvent;"
+			var val = "-- this example demostrate next flow for own (loopback) session: \n";
+			val    += "-- 1. WEB-UI-BUTTON-> submit-> \n";
+			val    += "-- 2. MVC-Controller->\n";
+			val    += "-- 3. HTTP-Session->\n";
+			val    += "-- 4. CEP->\n";
+			val    += "-- 5. CEP.http.fetcher->\n";
+			val    += "-- 6. http.data->\n";
+			val    += "-- 7. CEP->\n";
+			val    += "-- 8. ->WEB-UI\n";
+			val    += "-- JUST A: EXECUTE_ALL_FROM_EDITOR. B: press button 'myHttpEvent' \n";
+			val    += " select fetchObject (\"localhost\", \"/SpringMVC_addRRD_library/showlisteners/2\"  ) x  from myHttpEvent;"
+			
 			editor.setValue(val);
 		}
+		function SUBMIT_3(){
+		    var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "GET", "/ace4cep/push/"+Math.random(), false ); // false for synchronous request
+		    xmlHttp.send( null );
+		    return xmlHttp.responseText;
+			
+			
+		}		
 	</script>
 	<script type="text/javascript" src="js/ace4cep.js">
  

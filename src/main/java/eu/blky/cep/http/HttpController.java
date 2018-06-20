@@ -6,16 +6,25 @@ import javax.servlet.http.HttpServletRequest;
  
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory; 
-import org.springframework.context.annotation.Scope;
-import org.springframework.http.MediaType;
+import org.springframework.context.annotation.Scope; 
 import org.springframework.stereotype.Controller;
  
 import org.springframework.web.bind.annotation.*;
+
+import eu.blky.cep.utils.ws2http.HttpSessionConfigurator;
 import eu.blky.cep.weso.ace4cep.CepKeeper; 
- 
+
+/**
+ * 
+ * this controller used for sync WebSockerSession and HTTPSession in the tomcat enviroment ONLY.
+ * 
+ * @see HttpSessionConfigurator for details
+ * 
+ * @author i1
+ *
+ */
 @Controller 
 @Scope("session")
-@Deprecated // no sense to using this controller  - only authorized session ( single user itself ) is able to intract with this Controller! 
 public class HttpController {
     public static final String CEP_KEEPER = "cepKeeper";
 
@@ -36,7 +45,7 @@ public class HttpController {
     public @ResponseBody String testMestod(HttpServletRequest request){
        request.getSession().setAttribute(CEP_KEEPER,cepKeeper);       
        return "inited";
-    }   	
+    } 
     // SpringWEb v.4.x.x
     @RequestMapping(value = "/push/{id}", method = RequestMethod.GET)  
     public @ResponseBody String push2cep(@PathVariable("id") long id) {
@@ -50,19 +59,7 @@ public class HttpController {
     	}
         return ""+id;
     }
-    // SpringWEb v.4.x.x
-    @RequestMapping(value = "/push/{key}/value/{value}", method = RequestMethod.GET)  
-    public @ResponseBody String push2cep(@PathVariable("key") long key,@PathVariable("value") double value) {
-    	LOG.info("public String push2cep({},{})) ", key , value);
-    	try {
-            Object object = new HttpPushObject(key,value);
-    		cepKeeper.getCepRT().sendEvent(object);
-    		
-    	}catch(Exception e) {
-    		LOG.error("  public String push2cep(@PathVariable(\"id\") long id) {}", e);
-    	}
-        return ""+key+"="+value;
-    }    
+    
      
 	@PreDestroy
 	private void cleanUp() {

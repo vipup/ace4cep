@@ -152,6 +152,9 @@ public class ChatAnnotation {
 		// setupRrdFetcher
 		responce( setupRrdFetcher(configurationTmp) );
 		
+		// setupRrdFetcher
+		responce( setupRrdFetcherEx(configurationTmp) );
+		
 	    return keeper.getCepRT();
 	}
 
@@ -191,7 +194,17 @@ public class ChatAnnotation {
 		}
 		return  "hi from "+className;
 	}
+	private String setupRrdFetcherEx(ConfigurationOperations configurationTmp) {
+		String className = RrdFetcher.class.getName();
+		try {			
+			configurationTmp.addPlugInSingleRowFunction( "fetchObject", className, "fetchObject");
+		}catch (Exception e) {
+			LOG.error("private String setupRrdFetcherEx(ConfigurationOperations configurationTmp) {", e );
+		}
+		return  "hi from "+className;
+	}
 
+	
 	private String setupMyClass(ConfigurationOperations configurationTmp) {
 		String className = MyClass.class.getName();
 		try {
