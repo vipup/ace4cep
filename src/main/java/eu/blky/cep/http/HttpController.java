@@ -15,6 +15,7 @@ import eu.blky.cep.weso.ace4cep.CepKeeper;
  
 @Controller 
 @Scope("session")
+@Deprecated // no sense to using this controller  - only authorized session ( single user itself ) is able to intract with this Controller! 
 public class HttpController {
     public static final String CEP_KEEPER = "cepKeeper";
 
