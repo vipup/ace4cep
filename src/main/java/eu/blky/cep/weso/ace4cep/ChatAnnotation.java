@@ -47,7 +47,8 @@ import eu.blky.cep.http.RrdFetcher;
 import eu.blky.cep.kafka.CepKafkaDefaultConsumer;
 import eu.blky.cep.kafka.KafkaController;
 import eu.blky.cep.listeners.Defaulistener;
-import eu.blky.cep.listeners.ThroughputQuotedListener;
+import eu.blky.cep.listeners.JsonHandler;
+import eu.blky.cep.listeners.ThroughputQuotedListener; 
 import eu.blky.cep.utils.ws2http.HttpSessionConfigurator;
  
  
@@ -155,10 +156,21 @@ public class ChatAnnotation {
 		// setupRrdFetcher
 		responce( setupRrdFetcherEx(configurationTmp) );
 		
+		// setup Common JSON_HAndler
+		//responce( setupJsonHandler(epRuntime) );
+		
+		
 	    return keeper.getCepRT();
 	}
 
-
+	private String setupJsonHandler(EPRuntime epRuntime) { ;
+		EPStatement jsonEQL= createEPStatement("select * from JsonHandler"); 
+		UpdateListener jh = new JsonHandler();
+		jsonEQL.addListener(jh);
+		
+		return   "hi from setupJsonHandler";
+	}
+	
 	private String setupMyKafkaEvent(EPRuntime epRuntime) {
 		// CFG-> SP -> RT 
 		//       +---> ADM
@@ -204,6 +216,7 @@ public class ChatAnnotation {
 		return  "hi from "+className;
 	}
 
+	
 	
 	private String setupMyClass(ConfigurationOperations configurationTmp) {
 		String className = MyClass.class.getName();
@@ -288,7 +301,10 @@ public class ChatAnnotation {
     	}else if ("ss".equals(message)) { // show statements
     		exec_ss(message);
     	}else if ("se".equals(message) || "le".equals(message)) { // show|list eventtypes
-    		exec_le(message);
+    		exec_le(message);    		
+    	// INIT JSONHANDLER responce( setupJsonHandler(epRuntime) );	
+    	}else if ("ijh".equals(message)) {  
+    		exec_ijh(message);
     	}else if ("hideall".equals(message)) {  
     		exec_hide(message);
     	}else if ("hide".equals(message)) { 
@@ -317,6 +333,19 @@ public class ChatAnnotation {
     	}		
     } 
 	
+	private void exec_ijh(String message) {
+		// INIT JSONHANDLER
+		try {
+			CepKeeper keeper = getKeeper(); 
+			EPServiceProvider cep =  keeper.getCep();
+			EPRuntime epRuntime = cep.getEPRuntime();
+			setupJsonHandler(epRuntime) ;
+		}catch(Throwable t) {
+			LOG.error("INIT JSONHANDLER", t);
+		}
+	}
+
+
 	private ArrayList<String> cleanUpMessages(String message) {
 		ArrayList<String> retval = new ArrayList<String>();
 		String nextEQL="";
