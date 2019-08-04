@@ -14,7 +14,7 @@ import com.espertech.esper.client.EPServiceProvider;
  
 
 @Component
-@Scope("session") 
+@Scope("singleton") 
 public class CepKeeper {
 
     private EPServiceProvider cep;

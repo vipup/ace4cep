@@ -87,8 +87,7 @@ insert into PI select * from IP1 where (i < maxI) ;
 			val    += "-- 7. CEP->\n";
 			val    += "-- 8. ->WEB-UI\n";
 			val    += "-- JUST A: EXECUTE_ALL_FROM_EDITOR. B: press button 'myHttpEvent' \n";
-			val    += " select fetchObject (\"localhost\", \"/SpringMVC_addRRD_library/showlisteners/2\"  ) x  from myHttpEvent;"
-			
+			val    += " select fetchObject (\"localhost\", \"/jersey-restful-server-example/rest/json/version\"  ) x  from myHttpEvent;"
 			editor.setValue(val);
 		}
 		function SUBMIT_3(){
