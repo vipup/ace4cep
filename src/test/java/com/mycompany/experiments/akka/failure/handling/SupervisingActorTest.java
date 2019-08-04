@@ -19,4 +19,16 @@ public class SupervisingActorTest {
 		assertTrue(true);
 	}
 
+	@Test
+	public void testNoEnd() {
+		String s ="";
+		for (long i=0;i<11111111111L;i++) {
+			System.out.println(" 1>"+i+s);
+			s +=i;
+			s= s.replace("1", ""+i);
+			assertTrue(true);
+		}
+		assertTrue(true);
+	}
+
 }
